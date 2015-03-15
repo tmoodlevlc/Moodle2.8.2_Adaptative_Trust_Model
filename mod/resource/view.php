@@ -92,6 +92,7 @@ if ($displaytype == RESOURCELIB_DISPLAY_OPEN || $displaytype == RESOURCELIB_DISP
     if (!isset($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'], 'modedit.php') === false) {
         $redirect = true;
     }
+	
 }
 
 if ($redirect) {

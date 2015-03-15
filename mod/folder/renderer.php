@@ -99,13 +99,30 @@ class mod_folder_renderer extends plugin_renderer_base {
         if (empty($dir['subdirs']) and empty($dir['files'])) {
             return '';
         }
-        $result = '<ul>';
+        
+		
+			// ==================Trust Model==========================
+			$like= get_string('like', 'block_trust_model');
+			$not_like= get_string('not_like', 'block_trust_model');
+			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => +1)),$like);
+			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => -1)),$not_like);
+			//====================================================
+			
+		
+		$result = '<ul>';
         foreach ($dir['subdirs'] as $subdir) {
             $image = $this->output->pix_icon(file_folder_icon(24), $subdir['dirname'], 'moodle');
             $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
-                    html_writer::tag('span', s($subdir['dirname']), array('class' => 'fp-filename'));
-            $filename = html_writer::tag('div', $filename, array('class' => 'fp-filename-icon'));
-            $result .= html_writer::tag('li', $filename. $this->htmllize_tree($tree, $subdir));
+						html_writer::tag('span', s($subdir['dirname']), array('class' => 'fp-filename')).
+					
+					// ==================Trust Model Directorio==========================
+					html_writer::tag('span', implode(' | ', $comandoTrust), array('class'=>'commands'));
+					//====================================================
+					
+			$filename = html_writer::tag('div', $filename, array('class' => 'fp-filename-icon'));
+			
+			$result .= html_writer::tag('li', $filename. $this->htmllize_tree($tree, $subdir));
+
         }
         foreach ($dir['files'] as $file) {
             $filename = $file->get_filename();
@@ -118,7 +135,12 @@ class mod_folder_renderer extends plugin_renderer_base {
                 $image = $this->output->pix_icon(file_file_icon($file, 24), $filename, 'moodle');
             }
             $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
-                    html_writer::tag('span', $filename, array('class' => 'fp-filename'));
+						html_writer::tag('span', $filename, array('class' => 'fp-filename')).
+						
+						// ==================Trust Model Archivo==========================
+						html_writer::tag('span', implode(' | ', $comandoTrust), array('class'=>'commands'));
+						//====================================================
+						
             $filename = html_writer::tag('span',
                     html_writer::link($url->out(false, array('forcedownload' => 1)), $filename),
                     array('class' => 'fp-filename-icon'));

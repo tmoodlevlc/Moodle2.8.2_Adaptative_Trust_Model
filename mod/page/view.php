@@ -78,9 +78,23 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_heading($course->fullname);
     $PAGE->set_activity_record($page);
 }
+
+
+// =================Trust Model===========================
+$like= get_string('like', 'block_trust_model');
+$not_like= get_string('not_like', 'block_trust_model');
+$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 5, 'u' => $user_id, 'c' => $course_id, 'mc' => +1)),$like);
+$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 5, 'u' => $user_id, 'c' => $course_id, 'mc' => -1)),$not_like);
+$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands')).html_writer::empty_tag('br');			
+// =====================================================
+
+
 echo $OUTPUT->header();
 if (!isset($options['printheading']) || !empty($options['printheading'])) {
     echo $OUTPUT->heading(format_string($page->name), 2);
+	// =====================Trust Model=====================
+	echo $trust_model;
+	// =====================================================
 }
 
 if (!empty($options['printintro'])) {

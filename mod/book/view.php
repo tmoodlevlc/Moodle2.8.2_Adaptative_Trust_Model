@@ -172,8 +172,23 @@ if ($nextid) {
 // Book display HTML code
 // =====================================================
 
+
+// ==================Trust Model==========================
+$like= get_string('like', 'block_trust_model');
+$not_like= get_string('not_like', 'block_trust_model');
+$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => +1)),$like);
+$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => -1)),$not_like);
+$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));			
+// =====================================================
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($book->name);
+
+// ==================Trust Model========================
+//echo $OUTPUT->heading($book->name.$modeloConfiana);
+echo $trust_model;
+// =====================================================
+
 
 // upper nav
 echo '<div class="navtop">'.$chnavigation.'</div>';

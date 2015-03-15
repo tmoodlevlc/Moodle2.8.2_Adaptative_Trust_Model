@@ -100,7 +100,17 @@ function resource_display_embed($resource, $cm, $course, $file) {
     resource_print_header($resource, $cm, $course);
     resource_print_heading($resource, $cm, $course);
 
-    echo $code;
+    
+	// ==================Trust Model==========================
+	$like= get_string('like', 'block_trust_model');
+	$not_like= get_string('not_like', 'block_trust_model');
+	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'mc' => +1)),$like);
+	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'mc' => -1)),$not_like);
+	$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands')).html_writer::empty_tag('br');	
+	echo $trust_model;
+	//====================================================
+			
+	echo $code;
 
     resource_print_intro($resource, $cm, $course);
 
@@ -324,8 +334,16 @@ function resource_get_optional_details($resource, $cm) {
             $details = $size . $type;
         }
     }
-
-    return $details;
+	
+	// ==================Trust Model==========================
+	$like= get_string('like', 'block_trust_model');
+	$not_like= get_string('not_like', 'block_trust_model');
+	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'mc' => +1)),$like);
+	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'mc' => -1)),$not_like);
+	$details .=  html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));
+    //====================================================
+	
+	return $details;
 }
 
 /**
