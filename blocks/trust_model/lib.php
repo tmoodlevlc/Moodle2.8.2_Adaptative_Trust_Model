@@ -58,18 +58,96 @@ function insert_history_assign($user,$course,$assign,$assign_user,$comment_user,
 		return $DB->insert_record('trust_f1w1_history_assign', $f1w1_history_assign);
 	}
 }
+
+function insert_history_folder_file($user,$course,$folder_file_id,$folder_file_user,$action_mc,$value_date) {
+	global $CFG, $DB;
+    $date='date_tm';
+	
+	if(!$DB->record_exists('trust_f1w1_history_folder', array('user_id' => $user,'course_id' => $course,'folder_file_id' => $folder_file_id,
+							'folder_file_user' => $folder_file_user)))
+	{
+		//Crea un registro trust_f1w1_history_folder
+		$f1w1_history_folderfile = new stdClass ();   
+		$f1w1_history_folderfile->user_id = $user; 				
+		$f1w1_history_folderfile->course_id = $course;   
+		$f1w1_history_folderfile->folder_file_id = $folder_file_id;
+		$f1w1_history_folderfile->folder_file_user = $folder_file_user;
+		$f1w1_history_folderfile->action = $action_mc;
+		$f1w1_history_folderfile->$date = $value_date;
+		return $DB->insert_record('trust_f1w1_history_folder', $f1w1_history_folderfile);
+	}
+}
+
+function insert_history_file($user,$course,$resource_id,$file_id,$file_user,$action_mc,$value_date) {
+	global $CFG, $DB;
+    $date='date_tm';
+	
+	if(!$DB->record_exists('trust_f1w1_history_file', array('user_id' => $user,'course_id' => $course,'resource_id' => $resource_id, 'file_id' => $file_id,
+							'file_user' => $file_user)))
+	{
+		//Crea un registro trust_f1w1_history_folder
+		$f1w1_history_file = new stdClass ();   
+		$f1w1_history_file->user_id = $user; 				
+		$f1w1_history_file->course_id = $course;
+		$f1w1_history_file->resource_id = $resource_id;		
+		$f1w1_history_file->file_id = $file_id;
+		$f1w1_history_file->file_user = $file_user;
+		$f1w1_history_file->action = $action_mc;
+		$f1w1_history_file->$date = $value_date;
+		return $DB->insert_record('trust_f1w1_history_file', $f1w1_history_file);
+	}
+}
+
+function insert_history_book($user,$course,$book_id,$book_user,$action_mc,$value_date) {
+	global $CFG, $DB;
+    $date='date_tm';
+	
+	if(!$DB->record_exists('trust_f1w1_history_book', array('user_id' => $user,'course_id' => $course,'book_id' => $book_id, 'book_user' => $book_user)))
+	{
+		//Crea un registro trust_f1w1_history_folder
+		$f1w1_history_book = new stdClass ();   
+		$f1w1_history_book->user_id = $user; 				
+		$f1w1_history_book->course_id = $course;
+		$f1w1_history_book->book_id = $book_id;
+		$f1w1_history_book->book_user = $book_user;
+		$f1w1_history_book->action = $action_mc;
+		$f1w1_history_book->$date = $value_date;
+		return $DB->insert_record('trust_f1w1_history_book', $f1w1_history_book);
+	}
+}
+
+function insert_history_page($user,$course,$page_id,$page_user,$action_mc,$value_date) {
+	global $CFG, $DB;
+    $date='date_tm';
+	
+	if(!$DB->record_exists('trust_f1w1_history_page', array('user_id' => $user,'course_id' => $course,'page_id' => $page_id, 'page_user' => $page_user)))
+	{
+		//Crea un registro trust_f1w1_history_folder
+		$f1w1_history_page = new stdClass ();   
+		$f1w1_history_page->user_id = $user; 				
+		$f1w1_history_page->course_id = $course;
+		$f1w1_history_page->page_id = $page_id;
+		$f1w1_history_page->page_user = $page_user;
+		$f1w1_history_page->action = $action_mc;
+		$f1w1_history_page->$date = $value_date;
+		return $DB->insert_record('trust_f1w1_history_page', $f1w1_history_page);
+	}
+}
+
 //Funciones para F2W2
 function tabla_probabilidad_condicional_f2w2() {
 	global $DB;
+	$resource= 'resource';
 		
 	$combinaciones =  $DB -> get_records_sql('SELECT * FROM {trust_f2w2_tpc}');
 	if(empty($combinaciones)){
-		//Dimensión Me gusta
+		//Dimensión Confianza positiva
 		$tcp = new stdClass ();
 	    $tcp->type_dimension = 'reputation_positive';
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '1.0';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -77,7 +155,35 @@ function tabla_probabilidad_condicional_f2w2() {
 	    $tcp->type_dimension = 'reputation_positive';
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.75';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.75';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '0.75';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -86,7 +192,18 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'i_like';
-		$tcp->probability = '0.75';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
 		$tcp = new stdClass ();
@@ -94,14 +211,18 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.25';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		
 		
 		$tcp = new stdClass ();
 	    $tcp->type_dimension = 'reputation_positive';
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '0.75';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -109,7 +230,26 @@ function tabla_probabilidad_condicional_f2w2() {
 	    $tcp->type_dimension = 'reputation_positive';
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.25';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -118,6 +258,16 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.25';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -126,15 +276,28 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.25';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_positive';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.0';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
-	
-		//Dimensión No me gusta
+		
+		
+		
+		//Dimensión Confianza negativa
 		$tcp = new stdClass ();
 	    $tcp->type_dimension = 'reputation_negative';
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '0.0';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -142,7 +305,35 @@ function tabla_probabilidad_condicional_f2w2() {
 	    $tcp->type_dimension = 'reputation_negative';
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.25';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.25';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '0.25';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -151,7 +342,18 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'i_like';
-		$tcp->probability = '0.25';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'i_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
 		$tcp = new stdClass ();
@@ -159,14 +361,18 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'i_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.75';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		
 		
 		$tcp = new stdClass ();
 	    $tcp->type_dimension = 'reputation_negative';
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
 		$tcp->probability = '0.25';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -174,7 +380,26 @@ function tabla_probabilidad_condicional_f2w2() {
 	    $tcp->type_dimension = 'reputation_negative';
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'i_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'i_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.75';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -183,6 +408,16 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'i_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.50';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'i_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '0.75';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
 		
@@ -191,9 +426,19 @@ function tabla_probabilidad_condicional_f2w2() {
 		$tcp->forum = 'not_like'; 				
 		$tcp->quiz = 'not_like';   
 		$tcp->assign = 'not_like';
+		$tcp->$resource = 'i_like';
+		$tcp->probability = '0.75';
+		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
+		
+		$tcp = new stdClass ();
+	    $tcp->type_dimension = 'reputation_negative';
+		$tcp->forum = 'not_like'; 				
+		$tcp->quiz = 'not_like';   
+		$tcp->assign = 'not_like';
+		$tcp->$resource = 'not_like';
 		$tcp->probability = '1.0';
 		$tcp->id = $DB->insert_record('trust_f2w2_tpc', $tcp);
-	
+		
 	}
 }
 
@@ -242,6 +487,18 @@ function inferencia_f2w2($userid, $courseid) {
 		}
 	}
 	
+	$evidenceResource=$DB->get_record('trust_f1w1_resource', array('user_id' => $userid, 'course_id' => $courseid));
+	if($evidenceResource){
+		if($evidenceResource -> i_like == 0 && $evidenceResource -> not_like==0){
+			$probResourceLike = 0.50;
+			$probResourceNotlike = 0.50;
+		}else{
+			$sum = $evidenceResource -> i_like + $evidenceResource -> not_like;
+			$probResourceLike = ($evidenceResource -> i_like)/ $sum;
+			$probResourceNotlike = ($evidenceResource -> not_like)/ $sum;
+		}
+	}
+	
 	//Obtengo la tabla de probabilidad condicional
 	$select= "SELECT * FROM {trust_f2w2_tpc} t";												
 	$combinations = $DB -> get_records_sql("$select");
@@ -277,11 +534,21 @@ function inferencia_f2w2($userid, $courseid) {
 			}
 		}
 		
+		$res= 'resource';
+		$resource = $c -> $res;
+		if($resource == 'i_like'){
+			$probabilityResource = $probResourceLike;
+		}else{
+			if($resource == 'not_like'){
+				$probabilityResource = $probResourceNotlike;
+			}
+		}
+		
 		//Probabilidad Condicional
 		$probabilityCondition = $c -> probability;
 		
 		//Probabilidad conjunta
-		$multiplication= $probabilityForum * $probabilityQuiz * $probabilityAssign * $probabilityCondition;
+		$multiplication= $probabilityForum * $probabilityQuiz * $probabilityAssign * $probabilityResource *$probabilityCondition;
 		
 		
 		if($c->type_dimension == 'reputation_positive'){
@@ -315,8 +582,8 @@ function inferencia_f2w2($userid, $courseid) {
 		}
 	}
 	
-	return $probForumLike.'-'.$probForumNotlike.'/'.$probQuizLike.'-'.$probQuizNotlike.'/'.$probAssignLike.'-'.$probAssignNotlike. 'P'.$reputation_positive.
-			'N'.$reputation_negative;
-	
+	//return $probForumLike.'-'.$probForumNotlike.'/'.$probQuizLike.'-'.$probQuizNotlike.'/'.$probAssignLike.'-'.$probAssignNotlike. 'P'.$reputation_positive.
+			//'N'.$reputation_negative;
+	return $reputation_positive;
 	
 }

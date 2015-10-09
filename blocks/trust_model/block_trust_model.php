@@ -45,7 +45,7 @@ class block_trust_model extends block_base {
 		tabla_probabilidad_condicional_f2w2();
 		
 		if(isguestuser() or !isloggedin()){ //Muestra si es usuario invitado o no esta logueado
-					$this->content->text .= '<div class="info">Ingresar al sistema</div>';
+					$this->content->text .= '<div class="info texto">Ingresar al sistema</div>';
 		}else{			
 			
 			//Obtengo el contexto de curso
@@ -53,21 +53,45 @@ class block_trust_model extends block_base {
 			//Obtengo los roles del usuario que tiene asignado en el contexto del curso
 			$roles = get_user_roles ( $context , $USER -> id ,  true);
 					if(empty($roles)){//si esta vacio	
-							$this->content->text .= '<div class="info">Ir al curso</div>';
+							$this->content->text .= '<div class="info texto">Ir a un curso</div>';
 							if(is_siteadmin($USER->id)){
-								$this->content->text .='Administracion';
-								$f1w1 = $this->f1w1_Previous_Experience();
-								$this->content->text.= inferencia_f2w2($USER -> id, $COURSE -> id);
-								$this->content->text.= $this->trust($f1w1);
+								
+								if($COURSE -> id != 1){
+									
+									$f1w1 = $this->f1w1_Previous_Experience();
+									$f2w2 = inferencia_f2w2($USER -> id, $COURSE -> id);
+									$this->trust($f1w1);
+									
+									$link = '/blocks/trust_model/index.php';
+									$this->content->text = html_writer::link(new moodle_url($link, array('u' => $USER -> id, 'c' => $COURSE -> id)), 'Ver detalles');
+									$this->content->text .= '<ul class="dimensiones">
+															  <li>
+																<a href="#">Dimensiones de la confianza
+																  <span> Experiencia previa: '.$f1w1.'</span>
+																  <span> Reputación positiva: '.$f2w2.'</span>
+																</a>
+															  </li>
+															</ul>';
+								}
+								
 							}	
 					}else{	
 							$f1w1 = $this->f1w1_Previous_Experience();
-							$this->content->text.= inferencia_f2w2($USER -> id, $COURSE -> id);
-							$this->content->text.= $this->trust($f1w1);
+							$f2w2 = inferencia_f2w2($USER -> id, $COURSE -> id);
+							$this->trust($f1w1);
 							
-							$this->content->text.= '<div class="info">Confianza</div>';
-
-							$bandera=true;
+							$link = '/blocks/trust_model/index.php';
+									$this->content->text = html_writer::link(new moodle_url($link, array('u' => $USER -> id, 'c' => $COURSE -> id)), 'Ver detalles');
+									$this->content->text .= '<ul class="dimensiones">
+															  <li>
+																<a href="#">Dimensiones de la confianza
+																  <span> Experiencia previa: '.$f1w1.'</span>
+																  <span> Reputación positiva: '.$f2w2.'</span>
+																</a>
+															  </li>
+															</ul>';
+							
+							/*$bandera=true;
 							foreach ($roles as $rol) {	
 								//Si tiene rol de estudiante
 								if( $rol ->shortname == 'student'){
@@ -82,11 +106,12 @@ class block_trust_model extends block_base {
 									}
 								}
 
-							}
+							}*/
 					}				
 						
-		}
-		$this->content->footer='<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">Modelo de confianza</p>'; 			
+		}	
+		
+		$this->content->footer='<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('pluginname', 'block_trust_model').'</p>'; 			
 		return $this->content;
 	
 	}
@@ -183,10 +208,48 @@ class block_trust_model extends block_base {
 					$trust_assign->id = $DB->insert_record('trust_f1w1_assign', $trust_assign);	
 				}
 			}
+			
+			
+			
+		//Confianza en los resources
+		$resource_like = $DB-> count_records('trust_f1w1_history_book', array('book_user' => $userid,'course_id'=>$courseid,'action' => 1));
+		$resource_like += $DB-> count_records('trust_f1w1_history_page', array('page_user' => $userid,'course_id'=>$courseid,'action' =>1));
+		$resource_like += $DB-> count_records('trust_f1w1_history_folder', array('folder_file_user' => $userid,'course_id'=>$courseid,'action' => 1));
+		$resource_like += $DB-> count_records('trust_f1w1_history_file', array('file_user' => $userid,'course_id'=>$courseid,'action' =>1));
 		
+		$resource_notlike = $DB-> count_records('trust_f1w1_history_book', array('book_user' => $userid,'course_id'=>$courseid,'action' => -1));
+		$resource_notlike += $DB-> count_records('trust_f1w1_history_page', array('page_user' => $userid,'course_id'=>$courseid,'action' =>-1));
+		$resource_notlike += $DB-> count_records('trust_f1w1_history_folder', array('folder_file_user' => $userid,'course_id'=>$courseid,'action' => -1));
+		$resource_notlike += $DB-> count_records('trust_f1w1_history_file', array('file_user' => $userid,'course_id'=>$courseid,'action' =>-1));
+		//Ingresa los datos en la BD
+			if ($DB->record_exists('trust_f1w1_resource', array('user_id' => $userid, 'course_id' => $courseid))) {//Retorna true si encuentra al menos un registro.
+					//Actualizo las evidencias
+					$actualizar =  $DB -> get_record('trust_f1w1_resource',  array('user_id' => $userid, 'course_id' => $courseid));											
+					$trust_resource = new stdClass ();
+					$trust_resource->id = 	$actualizar ->id;				
+					$trust_resource->user_id = $userid; 				
+					$trust_resource->course_id = $courseid;   
+					$trust_resource->i_like = $resource_like;
+					$trust_resource->not_like = $resource_notlike;
+					$trust_resource->trust = $resource_like/($resource_like+$resource_notlike);
+					$DB->update_record('trust_f1w1_resource', $trust_resource);
+				
+			}else{
+				if (!$DB->record_exists('trust_f1w1_resource', array('user_id' => $userid, 'course_id' => $courseid))){//Ingresa si no obtiene ningun registro
+					//Creo un registro 
+					$trust_resource = new stdClass ();   
+					$trust_resource->user_id = $userid; 				
+					$trust_resource->course_id = $courseid;   
+					$trust_resource->i_like = $resource_like;
+					$trust_resource->not_like = $resource_notlike;
+					$trust_resource->trust = $resource_like/($resource_like+$resource_notlike);
+					$trust_resource->id = $DB->insert_record('trust_f1w1_resource', $trust_resource);	
+				}
+			}
+			
 		//Confianza F1W1_Previous_Experience
-		$f1w1_like= $forum_like + $quiz_like + $assign_like;
-		$f1w1_notlike=$forum_notlike + $quiz_notlike + $assign_notlike;
+		$f1w1_like= $forum_like + $quiz_like + $assign_like + $resource_like;
+		$f1w1_notlike=$forum_notlike + $quiz_notlike + $assign_notlike + $resource_notlike;
 		$f1w1= $f1w1_like/($f1w1_like+$f1w1_notlike);
 		return $f1w1;
 		
@@ -232,6 +295,6 @@ class block_trust_model extends block_base {
 					$trust->id = $DB->insert_record('trust', $trust);	
 				}
 			}
-			return $f1w1;
+			//return $f1w1;
 	}
 }
