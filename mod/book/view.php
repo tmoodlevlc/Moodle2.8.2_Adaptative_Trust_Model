@@ -173,19 +173,49 @@ if ($nextid) {
 // =====================================================
 
 
-// ==================Trust Model==========================
+// ==================Trust Model Book==========================
+global $DB, $USER, $COURSE;
+$user_id = $USER->id;
+$course_id = $COURSE->id;
+$book_id= $book->id;
+
+//Obtener el id del usuario que ha creado el book
+$select= "SELECT l.userid FROM  {logstore_standard_log} l, {course_modules} cm WHERE ";
+$select.= "l.action='created' AND l.target='course_module' AND l.courseid=:courseid AND l.contextinstanceid = cm.id AND cm.course=:course_id AND cm.module='3' AND cm.instance=:bookid";												
+$params = array();												
+$params['courseid'] = $course_id;
+$params['course_id'] = $course_id;
+$params['bookid'] = $book_id;
+$consulta= $DB -> get_record_sql("$select", $params, $limitfrom='', $limitnum='');
+
+$book_user= $consulta->userid;
+
 $like= get_string('like', 'block_trust_model');
 $not_like= get_string('not_like', 'block_trust_model');
-$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => +1)),$like);
-$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => -1)),$not_like);
-$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));			
+
+
+//Controla, no calificar un recurso creado por el mismo usuario
+if($user_id != $book_user){
+	$count = $DB->count_records('trust_f1w1_history_book', array('user_id' => $user_id,'course_id' => $course_id,'book_id' => $book_id, 'book_user' => $book_user));
+	if($count==0){//Ingresa si no existe un registro, no evaluo
+		$url = $PAGE->url;
+		$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 5, 'u' => $user_id, 'c' => $course_id, 'b' => $book_id,'bu' => $book_user,'mc' => +1, 'url' => $url)),$like);
+		$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 5, 'u' => $user_id, 'c' => $course_id, 'b' => $book_id,'bu' => $book_user,'mc' => -1, 'url' =>$url)),$not_like);
+	}else{
+		$comandoTrust[] = $like;
+		$comandoTrust[] = $not_like;
+	}
+}else{
+	$comandoTrust[] = $like;
+	$comandoTrust[] = $not_like;
+}
+$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));		
 // =====================================================
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($book->name);
 
 // ==================Trust Model========================
-//echo $OUTPUT->heading($book->name.$modeloConfiana);
 echo $trust_model;
 // =====================================================
 

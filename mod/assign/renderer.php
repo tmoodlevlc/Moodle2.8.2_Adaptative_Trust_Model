@@ -402,7 +402,7 @@ class mod_assign_renderer extends plugin_renderer_base {
                                                                       $status->returnparams);
                 //////////////////////////////MODELO DE CONFIANZA TAREA//////////////////////////////////////////////////////////////////
 				//Definir opciones del Modelo de Confianza y enviar parametros
-				global $USER, $COURSE;
+				global $USER, $COURSE, $PAGE;
 				$user_id = $USER->id;
 				$course_id = $COURSE->id;
 				$assign_id=$status->grade->assignment;
@@ -416,8 +416,9 @@ class mod_assign_renderer extends plugin_renderer_base {
 					$count = $DB->count_records('trust_f1w1_history_assign', array('user_id' => $user_id,'course_id' => $course_id,'assing_id' => $assign_id,
 									'comments_user' => $comment_user));
 					if($count==0){//Ingresa si no existe un registro, no evaluo la tarea
-						$comandoconfianza[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3, 'rol' => 'est', 'u' => $user_id, 'c' => $course_id,'a' => $assign_id, 'cu' => $comment_user, 'mc' => +1)),$like);
-						$comandoconfianza[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3, 'rol' => 'est', 'u' => $user_id, 'c' => $course_id, 'a' => $assign_id, 'cu' => $comment_user, 'mc' => -1)),$not_like);
+						$url = $PAGE->url;
+						$comandoconfianza[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3, 'rol' => 'est', 'u' => $user_id, 'c' => $course_id,'a' => $assign_id, 'cu' => $comment_user, 'mc' => +1, 'url' => $url)),$like);
+						$comandoconfianza[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3, 'rol' => 'est', 'u' => $user_id, 'c' => $course_id, 'a' => $assign_id, 'cu' => $comment_user, 'mc' => -1, 'url' => $url)),$not_like);
 					}else{//Ingresa si ya evaluo la tarea
 						$comandoconfianza[]= $like;
 						$comandoconfianza[]= $not_like;

@@ -94,29 +94,23 @@ class mod_folder_renderer extends plugin_renderer_base {
      * Internal function - creates htmls structure suitable for YUI tree.
      */
     protected function htmllize_tree($tree, $dir) {
-        global $CFG;
+        global $CFG, $USER, $COURSE, $DB, $PAGE;
 
         if (empty($dir['subdirs']) and empty($dir['files'])) {
             return '';
         }
         
 		
-			// ==================Trust Model==========================
-			$like= get_string('like', 'block_trust_model');
-			$not_like= get_string('not_like', 'block_trust_model');
-			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => +1)),$like);
-			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'mc' => -1)),$not_like);
-			//====================================================
 			
 		
 		$result = '<ul>';
         foreach ($dir['subdirs'] as $subdir) {
             $image = $this->output->pix_icon(file_folder_icon(24), $subdir['dirname'], 'moodle');
             $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
-						html_writer::tag('span', s($subdir['dirname']), array('class' => 'fp-filename')).
+						html_writer::tag('span', s($subdir['dirname']), array('class' => 'fp-filename'));
 					
 					// ==================Trust Model Directorio==========================
-					html_writer::tag('span', implode(' | ', $comandoTrust), array('class'=>'commands'));
+					//html_writer::tag('span', implode(' | ', $comandoTrust), array('class'=>'commands'));
 					//====================================================
 					
 			$filename = html_writer::tag('div', $filename, array('class' => 'fp-filename-icon'));
@@ -134,10 +128,31 @@ class mod_folder_renderer extends plugin_renderer_base {
             } else {
                 $image = $this->output->pix_icon(file_file_icon($file, 24), $filename, 'moodle');
             }
+			
+			// ==================Trust Model Folder file==========================
+			$user_id = $USER->id;
+			$course_id = $COURSE->id;
+			$f_file_id= $file->get_id();
+			$f_file_user=$file->get_userid();
+			$like= get_string('like', 'block_trust_model');
+			$not_like= get_string('not_like', 'block_trust_model');
+			$comandoTrust= [];
+			//Controla, no calificar un recurso creado por el mismo usuario
+			if($user_id != $f_file_user){
+				//Verifica si ya evaluo el usuario 
+				$count = $DB->count_records('trust_f1w1_history_folder', array('user_id' => $user_id,'course_id' => $course_id,'folder_file_id' => $f_file_id));
+				if($count==0){//Ingresa si no existe un registro, no evaluo 
+					$url = $PAGE->url;
+					$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id, 'ff' => $f_file_id,'ffu' => $f_file_user, 'mc' => +1, 'url' => $url)),$like);
+					$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 4, 'u' => $user_id, 'c' => $course_id,'ff' => $f_file_id,'ffu' => $f_file_user, 'mc' => -1, 'url' => $url)),$not_like);
+				}
+			}
+			//=======================================================================
+
             $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
 						html_writer::tag('span', $filename, array('class' => 'fp-filename')).
 						
-						// ==================Trust Model Archivo==========================
+						// ==================Trust Model Folder file==========
 						html_writer::tag('span', implode(' | ', $comandoTrust), array('class'=>'commands'));
 						//====================================================
 						

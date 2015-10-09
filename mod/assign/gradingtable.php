@@ -486,7 +486,7 @@ class assign_grading_table extends table_sql implements renderable {
 	/////////////////////////////////////////MODELO DE CONFIANZA TAREA///////////////////////////////////////
 	//Especifica el contenido a mostrar en la columna Modelo de confianza
 	public function col_trust($row) {
-		global $USER, $COURSE, $DB;
+		global $USER, $COURSE, $DB, $PAGE;
 		$user_id = $USER->id;
 		$course_id = $COURSE->id;
 		$assign_id=$this->assignment->get_instance()->id;
@@ -500,9 +500,10 @@ class assign_grading_table extends table_sql implements renderable {
 			$count = $DB->count_records('trust_f1w1_history_assign', array('user_id' => $user_id,'course_id' => $course_id,'assing_id' => $assign_id,
 										'assing_user' => $assign_user));
 				if($count==0){//Ingresa si no existe un registro, no evaluo la tarea
-					return 	html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3,'rol' => 'doc','u' => $user_id, 'c' => $course_id,'a' => $assign_id,'au' => $assign_user,'mc' => +1)),$like).
+					$url = $PAGE->url;
+					return 	html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3,'rol' => 'doc','u' => $user_id, 'c' => $course_id,'a' => $assign_id,'au' => $assign_user,'mc' => +1, 'url' => $url)),$like).
 							html_writer::empty_tag('br').
-							html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3,'rol' => 'doc','u' => $user_id, 'c' => $course_id,'a' => $assign_id,'au' => $assign_user,'mc' => -1)),$not_like); 
+							html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 3,'rol' => 'doc','u' => $user_id, 'c' => $course_id,'a' => $assign_id,'au' => $assign_user,'mc' => -1, 'url' => $url)),$not_like); 
 				}else{//Ingresa si ya evaluo la tarea
 					return $like.
 						   html_writer::empty_tag('br').

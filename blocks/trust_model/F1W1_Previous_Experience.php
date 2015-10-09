@@ -1,13 +1,16 @@
 <?php
 require_once("../../config.php");
 require_once($CFG->dirroot . '/blocks/trust_model/lib.php');
-global $USER;
+global $USER, $COURSE;
 //Recupero parametros
 $opc = required_param('opc', PARAM_INT);
 $user = required_param('u', PARAM_INT); 
 $course = required_param('c', PARAM_INT); 
 $action_mc = required_param('mc', PARAM_INT); $_GET['mc'];
 $value_date = date("Y/m/d");
+
+$url= optional_param('url','',PARAM_TEXT);
+
 //optional_param('id', 0, PARAM_INT);
 	if($opc==1){//Modelo de confianza Foro
 		$forum = $_GET['f'];
@@ -57,28 +60,28 @@ $value_date = date("Y/m/d");
 								$resource_id = $_GET['r'];
 								$file_id = $_GET['f'];
 								$file_user = $_GET['fu'];
-								//No tomo encuenta el user del parametro recibido.
+								$objeto = $DB->get_record('resource', array('id' => $resource_id));
+								
+								if($url==''){
+									$url = new moodle_url('/course/view.php', array('id'=>$objeto->course));
+								}
+					
+								//No tomo encuenta el user y el curso recibido como parametro.
 								if($file_user != $USER->id){ //Controla, no calificar un recurso creado por el mismo usuario
-									$bandera=insert_history_file($USER->id,$course,$resource_id,$file_id,$file_user,$action_mc,$value_date);
-									if(!$bandera){
-										?>
-										<script type="text/javascript">
-											alert("Modelo de confianza ya registrada");
-										</script> 
-										<?php
-										;
-										
+									$bandera=insert_history_file($USER->id,$objeto->course,$resource_id,$file_id,$file_user,$action_mc,$value_date);
+									if(!$bandera){//Si ya califico el recurso
+										$bandera=1;
 									}
 								}else{
-									?>
-									<script type="text/javascript">
-										alert("No puede validar su recurso");
-										window.opener.document.location.reload();
-									</script> 
-									<?php
-									;
+									$bandera=1;
 								}
 								
+							}else{
+								if($opc==8){// Modelo de confianza URL
+									$url_id = $_GET['url_id'];
+									$url_user = $_GET['uu'];
+									$bandera=insert_history_url($user,$course,$url_id,$url_user,$action_mc,$value_date);
+								}
 							}
 						}
 					}
@@ -89,7 +92,6 @@ $value_date = date("Y/m/d");
 
 	if($bandera){
 		require_once("../../config.php");
-		$url = new moodle_url('/course/view.php', array('id'=>$course));
 		header("Location:$url");
 	}else{
 			?>

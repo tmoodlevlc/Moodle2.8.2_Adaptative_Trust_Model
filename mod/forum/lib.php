@@ -3490,8 +3490,7 @@ function forum_print_post($post, $discussion, $forum, &$cm, $course, $ownpost=fa
 	
 	///////////////////////////////////MODELO DE CONFIANZA FORO//////////////////////////////////////////
 	//Parametros a enviar 
-	
-	global $DB, $URL;
+	global $DB, $PAGE, $URL;
 	$userId=$USER->id;
 	$course_id=$discussion->course;
 	$forum_id=$discussion->forum;
@@ -3507,25 +3506,14 @@ function forum_print_post($post, $discussion, $forum, &$cm, $course, $ownpost=fa
 	//Muestra las opciones (Me gusta, No me gusta) en cada post del foro y se envia los parametros al archivo
 		if($userId != $post->userid){//Controla si ingresa a un post escrito por  el mismo usuario
 			if($count==0){//Ingresa si no existe un registro, no evaluo el post
+			$url = $PAGE->url;
 			$commands[] = array('url'=>new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', 
-			array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => +1)), 'text'=>$like);
+			array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => +1,'url' => $url)), 'text'=>$like);
 			
 			$commands[] = array('url'=>new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', 
-			array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => -1)), 'text'=>$not_like);
-			
-			/*($id = required_param('d', PARAM_INT);
-			$action_mc = optional_param('mc', -1, PARAM_INT);
-			$opc  = false;
-			$opc = optional_param('opc', false, PARAM_INT);
-			$commands[] = array('url'=>new moodle_url($URL, array ('d' => $id, 'mc' => 1, 'opc' =>true )), 'text'=>$like);
-			if($action_mc!=-1){
-				require_once($CFG->dirroot . '/blocks/trust_model/lib.php');
-				$value_date = date("Y/m/d");
-				$bandera=insert_history_forum($userId,$course_id,$forum_id,$discusion_id,$post_id,$post_user,$action_mc,$value_date);
-			}*/
-			
+			array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => -1,'url' => $url)), 'text'=>$not_like);
+						
 			}else{//Si ya evaluo el post
-				//$commands[]= html_writer::tag('a', $like, array('class'=>'commands'));
 				$commands[]= $like;
 				$commands[]= $not_like;
 			}

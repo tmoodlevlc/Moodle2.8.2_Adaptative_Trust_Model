@@ -182,7 +182,7 @@ class quiz_overview_table extends quiz_attempts_report_table {
 /////////////////////////////////MODELO DE CONFIANZA EXAMEN/////////////////////////////////////////////////////////
 	//Se especifica el contenido a mostrar en la columna confianza 
 	public function col_trust($attempt) {
-		global $USER, $COURSE, $DB;
+		global $USER, $COURSE, $DB, $PAGE;
 		$user_id = $USER->id;
 		$course_id = $COURSE->id;
 		$quiz_id = $this->quiz->id;
@@ -203,9 +203,10 @@ class quiz_overview_table extends quiz_attempts_report_table {
 									'attempts_id' => $attempt_id,'attempts_user' => $attempt_user));
 			
 			if($count==0){//Ingresa si no existe un registro, no evaluo la tarea
-			return 	html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 2,'u' => $user_id, 'c' => $course_id,'q' => $quiz_id,'a' => $attempt_id, 'au' => $attempt_user,'mc' => +1 )),$like ).
+			$url = $PAGE->url;
+			return 	html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 2,'u' => $user_id, 'c' => $course_id,'q' => $quiz_id,'a' => $attempt_id, 'au' => $attempt_user,'mc' => +1, 'url' => $url)),$like ).
 					html_writer::empty_tag('br').
-					html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 2,'u' => $user_id, 'c' => $course_id,'q' => $quiz_id,'a' => $attempt_id, 'au' => $attempt_user,'mc' => -1 )),$not_like);   
+					html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 2,'u' => $user_id, 'c' => $course_id,'q' => $quiz_id,'a' => $attempt_id, 'au' => $attempt_user,'mc' => -1, 'url' => $url)),$not_like);   
 			}else{//Ingresa si ya evaluo la tarea
 			return $like.
 				   html_writer::empty_tag('br').
