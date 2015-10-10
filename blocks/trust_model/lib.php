@@ -1613,18 +1613,23 @@ function rolParticipante($course, $user){
 	return $bandera;
 }
 
-function webService(){ //Cliente del servicio web
+function webService($location, $metodo){ //Cliente del servicio web
+	// http://tmoodlews.tk/webservice/webservice.php
+	// http://localhost/webservice/webservice.php
+	// getTrustModelExternal
 	try {
 		$client = new SoapClient(NULL, array('uri' => 'urn:webservices',
-											 'location' => 'http://tmoodlews.tk/webservice/webservice.php', //http://localhost/webservice/webservice.php
+											 'location' => $location, 
 											 'wsdl_cache' => 0,
 											 'trace' => 1,
 											 'encoding'=>'ISO-8859-1'));
-		$lstTrust = $client->getTrustModelExternal();
+		$metodo= '$lstTrust = $client->'.$metodo.'();';
+		eval($metodo);
 		return $lstTrust;
 	} catch (SoapFault $e) {
 		return ($client->__getLastResponse());
 	}
+	
 }
 function webServiceFilteredSave($lstTrust){//Lista filtrada, saber que estudiantes del servicio web corresponden al esta comunidad
 	global $DB;

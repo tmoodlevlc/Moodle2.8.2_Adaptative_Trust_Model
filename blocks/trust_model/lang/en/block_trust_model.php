@@ -137,17 +137,16 @@ $string['updateexternalTrust'] = 'Update External Trust';
 $string['descriptionWebService'] = 'External trust, corresponds to an average value that has been registered user to interact in other communities.
 This value may be obtained through the Web Service. When you connect as an administrator, automatically records
 belonging to this comuniadad were updated with external trust.';
-$string['connectexternalTrust'] = 'Connect to Web Service';
+$string['connectServiceWeb'] = 'Connect to Web Service';
 $string['description'] = 'Description';
 $string['updateTrustExternal'] = 'Records from the database, assigning each user a level of external confidence was updated.';
 $string['numberTrustExternal'] = 'Number of updated records';
 $string['exit'] = 'Exit';
 $string['error'] = 'Error conectarce the Web Service';
-
 $string['f7w7webService']='INSTITUTIONAL PARAMETER. You as an administrator to connect to a Web Service automatically logs
 							belonging to this community will be updated with those registered in the Web Service values.';
-$string['f7w7webServiceFunction'] = 'Function';
-$string['f7w7webServiceUri'] = 'URL of the Web Service';
-$string['f7w7webServiceLocation'] = 'File location apply the request';
 $string['f7w7webServiceDescription'] = 'Records database, giving each user the values for Institutional Parameter was updated.
 (Student Evaluation, Teacher Evaluation, Directing Evaluation, Par Evaluation)' ;
+$string['webServiceFunction'] = 'Function';
+$string['webServiceUri'] = 'URL of the Web Service';
+$string['webServiceLocation'] = 'File location apply the request';

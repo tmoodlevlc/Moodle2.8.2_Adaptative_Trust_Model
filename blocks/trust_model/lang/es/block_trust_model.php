@@ -136,22 +136,18 @@ $string['updateexternalTrust'] = 'Actualizar Confianza Externa';
 $string['descriptionWebService'] = 'La CONFIANZA EXTERNA, corresponde a un valor promedio que ha sido registrado al interactuar el usuario en otras comunidades.
 									Este valor podra ser obtenido a traves del Servicio Web. Al conectarse usted como administrador, automáticamente los registros 
 									que pertenecen	a esta comuniadad se actualizaron con la confianza externa.';
-$string['connectexternalTrust'] = 'Conectarce al Servicio Web';
+$string['connectServiceWeb'] = 'Conectarce al Servicio Web';
 $string['description'] = 'Descripción';
 $string['updateTrustExternal'] = 'Se actualizo los registros de la Base de Datos, asignando a cada usuario un Nivel de Confianza Externa.';
 $string['numberTrustExternal'] = 'Número de registros actualizados';
 $string['exit'] = 'Salir';
 $string['error'] = 'Error al conectarce con el Servicio Web';
-
-
 $string['f7w7webService']='PARÁMETRO INSTITUCIONAL. Al conectarse usted como administrador a un Servicio Web, automáticamente los registros 
 							que pertenecen	a esta comunidad se actualizaran con los valores registrados en el Servicio Web.';
-$string['f7w7webServiceFunction'] = 'Función';
-$string['f7w7webServiceUri'] = 'URL del Servicio Web';
-$string['f7w7webServiceLocation'] = 'Ubicación del archivo que aplica la solicitud' ;
 $string['f7w7webServiceDescription'] = 'Se actualizo los registros de la Base de Datos, asignando a cada usuario los valores correspondientes al Parametro Institucional.
 (Evaluación Estudiante, Evaluación Docente, Evaluación Directivo, Evaluación Par)' ;
-
-
+$string['webServiceFunction'] = 'Función';
+$string['webServiceUri'] = 'URL del Servicio Web';
+$string['webServiceLocation'] = 'Ubicación del archivo que aplica la solicitud' ;
 
 

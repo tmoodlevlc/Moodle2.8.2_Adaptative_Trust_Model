@@ -152,6 +152,12 @@ if($general_settings){
 		$packagefile = $fs->get_file($context->id, 'mod_scorm', 'package', 0, '/', $scorm->reference);
 		$url  = moodle_url::make_pluginfile_url( $packagefile->get_contextid () , $packagefile -> get_component() , $packagefile->get_filearea () ,null ,$packagefile -> get_filepath () , $packagefile->get_filename ()) ;
 		echo html_writer::link( $url, get_string('download', 'block_trust_model')).'<br>'; 
+	
+		//Leer archivo manifest.xml
+		//$file = $fs->get_file($context->id, 'mod_scorm', 'content', 0, '/', 'imsmanifest.xml');
+		//$url_file  = moodle_url::make_pluginfile_url( $file->get_contextid () , $file -> get_component() , $file->get_filearea () ,0 ,$file -> get_filepath () , $file->get_filename ()) ;
+		//echo "<a href=\"$url_file\">Descargar xml</a><br>";
+		
 		
 		//Mostrar el puntaje promedio, si ya valido el paquete Scorm
 		if($DB->record_exists('trust_f6w6_quality', array('scorm_id' => $scorm->id,'user_validate' => $USER->id, 'course_id' => $course->id))){											
@@ -278,7 +284,7 @@ if($general_settings){
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
 	
 echo $OUTPUT->heading(format_string($scorm->name));
 

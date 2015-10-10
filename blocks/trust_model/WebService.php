@@ -27,7 +27,9 @@ global $DB, $USER;
 	echo html_writer::end_tag('div');
 	
 	if($opc=='connect'){
-		$lstTrust=webService();//Conectarce con el servicio Web
+		$location=$_POST['locationWS'];
+		$metodo=$_POST['functionWS'];
+		$lstTrust=webService($location, $metodo);//Conectarce con el servicio Web
 		if(is_array($lstTrust)){
 			$lstUser=webServiceFilteredSave($lstTrust); //Actualizo la base de datos
 			$cell1=  '<div style="overflow:hidden;">';
@@ -51,8 +53,14 @@ global $DB, $USER;
 	}else{
 		$form  = '<div>';
 		$form .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/WebService.php?opc=connect" >';
-		$form .= '<p align=" justify">'.get_string('descriptionWebService', 'block_trust_model').'</p><br>';
-		$form .= '<input id="id_submitbutton"  type="submit" value="'.get_string('connectexternalTrust', 'block_trust_model').'">';
+		$form .= '<p align="justify">'.get_string('descriptionWebService', 'block_trust_model').'</p><br>';
+		$form .=  '<div style="overflow:hidden;">';
+		$form .= '<div style="width: 20%; float:left;">'.get_string('webServiceUri', 'block_trust_model').':&nbsp;</div>';
+		$form .= '<div style="width: 80%; float:left;"><input size="50" name="locationWS" type="text" placeholder="'.get_string('webServiceLocation', 'block_trust_model').'"  required></div>';
+		$form .= '<div style="width: 20%; float:left;">'.get_string('webServiceFunction', 'block_trust_model').':&nbsp;</div>';
+		$form .= '<div style="width: 80%; float:left;"><input size="50" name="functionWS" type="text" placeholder="'.get_string('webServiceFunction', 'block_trust_model').'"  required></div>';
+		$form .= '</div>';
+		$form .= '<input id="id_submitbutton"  type="submit" value="'.get_string('connectServiceWeb', 'block_trust_model').'">';
 		$form .= '</form></div>';
 		echo $form;
 	}
