@@ -26,7 +26,7 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 		$id_q = required_param('id_q', PARAM_INT);
 		delete_template_question_f7w7($id_q);
 	}else if($opc=='saveAll'){
-		$lstquestions =  $DB -> get_records('trust_f7w7_t_questions',  array ('category'=>$id_cat));
+		$lstquestions =  $DB -> get_records('trust_f7w7_t_questions',  array ('category'=>$id_cat, 'id_categories'=>$id));
 		foreach($lstquestions as $q){
 			$name=$q->id;
 			$textoquestions= $_POST[$name];

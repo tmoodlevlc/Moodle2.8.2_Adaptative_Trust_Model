@@ -1329,15 +1329,20 @@ function institutional_f7w7($courseid, $userid){
 	global $DB;
 	$config = $DB->get_record_sql('SELECT * FROM {trust_f7w7_config} WHERE codigo LIKE \'trust_model\'');
 	if($config){
-		if($config->template=='true'){ //Si la configuracion esta guardada desde los cuestionarios pre establecidos
-			$f7w7_t_answer= $DB->get_record_sql("SELECT t1.user_receptor, t1.t_inst_id, count(*) as cont, SUM(value) as suma FROM {trust_f7w7_t_answer} t1
-			INNER JOIN {trust_f7w7_t_inst}  t2 ON t1.t_inst_id =  t2.id
-			WHERE t2.course_id = ? AND t1.user_receptor = ? GROUP BY user_receptor, t_inst_id", array($courseid, $userid));
-			$f7w7 = ($f7w7_t_answer) ? $f7w7_t_answer->suma/$f7w7_t_answer->cont : 0; 
-			
-		}else if($config->web_service=='true'){//Si la configuracion esta guardada desde Web Service
-			$user =  $DB -> get_record('user',  array ('id'=>$userid));
-			$f7w7= institutional_f7w7_ws($userid, $user->idnumber);
+		$rol= rolParticipante($courseid, $userid);
+		if($rol==2){ //Si es docente
+			if($config->template=='true'){ //Si la configuracion esta guardada desde los cuestionarios pre establecidos
+				$f7w7_t_answer= $DB->get_record_sql("SELECT t1.user_receptor, t1.t_inst_id, count(*) as cont, SUM(value) as suma FROM {trust_f7w7_t_answer} t1
+				INNER JOIN {trust_f7w7_t_inst}  t2 ON t1.t_inst_id =  t2.id
+				WHERE t2.course_id = ? AND t1.user_receptor = ? GROUP BY user_receptor, t_inst_id", array($courseid, $userid));
+				$f7w7 = ($f7w7_t_answer) ? $f7w7_t_answer->suma/$f7w7_t_answer->cont : 0; 
+				
+			}else if($config->web_service=='true'){//Si la configuracion esta guardada desde Web Service
+				$user =  $DB -> get_record('user',  array ('id'=>$userid));
+				$f7w7= institutional_f7w7_ws($userid, $user->idnumber);
+			}
+		}else{ //Es estudiante
+			$f7w7=0.50;
 		}
 	}else{ //No esta guardada la configuracion previa
 		$f7w7=Null;
@@ -1614,9 +1619,6 @@ function rolParticipante($course, $user){
 }
 
 function webService($location, $metodo){ //Cliente del servicio web
-	// http://tmoodlews.tk/webservice/webservice.php
-	// http://localhost/webservice/webservice.php
-	// getTrustModelExternal
 	try {
 		$client = new SoapClient(NULL, array('uri' => 'urn:webservices',
 											 'location' => $location, 

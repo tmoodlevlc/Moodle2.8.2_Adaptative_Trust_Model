@@ -46,7 +46,6 @@ if($teachers){
 			$cell2= get_string('evaluate', 'block_trust_model');
 		}else{
 			$t_inst= $DB -> get_record('trust_f7w7_t_inst',  array ('course_id'=>$c));
-			//$teacher_evaluate= $DB -> get_records('trust_f7w7_t_est',  array ('user_est'=>$u, 'user_tea'=>$teacher->userid, 't_inst_id'=>$t_inst->id));	
 			$teacher_evaluate= $DB -> get_records('trust_f7w7_t_answer',  array ('cat'=>1, 't_inst_id'=>$t_inst->id, 'user_emisor'=>$u, 'user_receptor'=>$teacher->userid));
 			if($teacher_evaluate){//Si ya fue evaluado
 				$cell2= get_string('user_evaluated', 'block_trust_model');
