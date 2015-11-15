@@ -2,9 +2,7 @@
 global $DB, $CFG, $USER;
 require_once('../../config.php');
 require_once($CFG->dirroot . '/blocks/trust_model/lib.php');
-
 $opc = optional_param('opc', '',PARAM_TEXT);
-
 if (isguestuser()) {
     redirect($CFG->wwwroot);
 }
@@ -79,8 +77,6 @@ if($opc=='save'){
 	$PAGE->navbar->add(get_string('institutional', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	
-
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
@@ -103,17 +99,34 @@ if($opc=='save'){
 			$tbl_category= new html_table();
 			foreach($lst_category as $c){
 				$row= new html_table_row();
-				$cat1= '<label>'.$imagen.$c->name.'</label>';
+				$cat1= '<div>'.$imagen.$c->name.'</div>';
 				$cat2= '<div style="overflow:hidden;">';
-				$cat2.='<label style="width: 25%; float:left;">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 1, 'id' => $c->id)), get_string('student_questionnaire', 'block_trust_model')).'</label>';
-				$cat2.='<label style="width: 25%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 2, 'id' => $c->id)), get_string('teacher_questionnaire', 'block_trust_model')).'</label>';			
-				$cat2.='<label style="width: 25%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 3, 'id' => $c->id)), get_string('directivo_questionnaire', 'block_trust_model')).'</label>';
-				$cat2.='<label style="width: 25%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 4, 'id' => $c->id)), get_string('par_questionnaire', 'block_trust_model')).'</label>';
+				$cat2.='<label style="width: 50%; float:left;">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 1, 'id' => $c->id)), get_string('student_questionnaire', 'block_trust_model')).'</label>';
+				$cat2.='<label style="width: 50%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 2, 'id' => $c->id)), get_string('teacher_questionnaire', 'block_trust_model')).'</label>';			
+				$cat2.='<label style="width: 50%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 3, 'id' => $c->id)), get_string('directivo_questionnaire', 'block_trust_model')).'</label>';
+				$cat2.='<label style="width: 50%;float:left;  ">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('id_cat' => 4, 'id' => $c->id)), get_string('par_questionnaire', 'block_trust_model')).'</label>';
 				$cat2.='</div>';
 				$row->cells = array($cat1, $cat2);
 				$tbl_category->data[] = $row;
 			}
 			$tbl_category=html_writer::table($tbl_category);
+			
+			$escala= '<div style="overflow:hidden;">';
+			$escala.= '<div style="width: 20%; float:left;"><label  style="color: #2A5A5F; font-family: cursive;">'.get_string('questionscale_type', 'block_trust_model').' :</label></div>';
+			$escala.= '<div style="width: 30%; float:left;">';
+			$escala.= '<label><spam style="font-size: 12px;">0 '.get_string('escale0', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">1 '.get_string('escale1', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">2 '.get_string('escale2', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">3 '.get_string('escale3', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">4 '.get_string('escale4', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">5 '.get_string('escale5', 'block_trust_model').'</spam></label></div>';
+			$escala.=  '<div style="width: 20%; float:left;"><label style="color: #2A5A5F; font-family: cursive;">'.get_string('questionbinary_type', 'block_trust_model').' :</label></div>';
+			$escala.= '<div style="width: 30%; float:left;">';
+			$escala.= '<label><spam style="font-size: 12px;">1 '.get_string('binary1', 'block_trust_model').'</spam></label>';
+			$escala.= '<label><spam style="font-size: 12px;">2 '.get_string('binary2', 'block_trust_model').'</spam></label>';
+			$escala.= '</div></div>';
+			
+			$tbl_category.= $escala;
 		
 		}else if($institutional->web_service=='true'){
 				

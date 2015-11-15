@@ -7,7 +7,6 @@ $id_cat = required_param('id_cat', PARAM_INT);//A que clasificación pertenece 1
 $id = required_param('id', PARAM_INT);//id de la Categoria
 $opc = optional_param('opc', '',PARAM_TEXT);
 
-
 if (isguestuser()) {
     redirect($CFG->wwwroot);
 }
@@ -42,12 +41,14 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 	}
 	redirect(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php',array('id_cat' => $id_cat, 'id' => $id)));
 }else{
-	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php',array('id_cat' => $id_cat, 'id' => $id));
-	$PAGE->set_url($url);
+	
 	$urlImagen = new moodle_url('/blocks/trust_model/pix/items.png');
 	$imagen= '<img src="'.$urlImagen. '"alt="" />';
+	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
+	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	
-	// Disable message notification popups while the user is viewing their messages
+	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php',array('id_cat' => $id_cat, 'id' => $id));
+	$PAGE->set_url($url);
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -56,7 +57,6 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 	$PAGE->navbar->add(get_string('templateIns', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
 
@@ -70,7 +70,6 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 	}else if($id_cat==4){//Cuestionario de pares
 		$title= get_string('par_questionnaire', 'block_trust_model');
 	}
-	
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
 	echo html_writer::tag('h4', $title);
 	echo html_writer::end_tag('div');
@@ -88,14 +87,14 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 			$cell1= '<label>'.$c->name.'</label>';
 			//Obtengo los profesores de cada categoria
 			$roleTeacher =  $DB -> get_record('role',  array ('shortname'=>'editingteacher'));
-			$lstTeacher= $DB->get_records_sql("SELECT mdl_user.id as userid, mdl_user.firstname, mdl_user.lastname, mdl_course.id as courseid
-											FROM mdl_user
-											INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid 
-											INNER JOIN mdl_role ON mdl_role.id = mdl_role_assignments.roleid
-											INNER JOIN mdl_context ON mdl_context.id = mdl_role_assignments.contextid
-											INNER JOIN mdl_course ON mdl_course.id = mdl_context.instanceid
-											INNER JOIN mdl_course_categories ON mdl_course_categories.id = mdl_course.category
-											WHERE mdl_role.id = ? AND mdl_course_categories.path LIKE '%$c->path%' GROUP BY mdl_user.id ORDER BY mdl_user.lastname, mdl_user.firstname  ASC ", 
+			$lstTeacher= $DB->get_records_sql("SELECT user.id as userid, user.firstname, user.lastname, course.id as courseid
+											FROM {user} user
+											INNER JOIN {role_assignments} role_assignments ON user.id = role_assignments.userid 
+											INNER JOIN {role} role ON role.id = role_assignments.roleid
+											INNER JOIN {context} context ON context.id = role_assignments.contextid
+											INNER JOIN {course} course ON course.id = context.instanceid
+											INNER JOIN {course_categories} course_categories ON course_categories.id = course.category
+											WHERE role.id = ? AND course_categories.path LIKE '%$c->path%' GROUP BY user.id ORDER BY user.lastname, user.firstname  ASC ", 
 											array($roleTeacher->id));
 			//Si existe un directivo ya seleccionado
 			$directiveActual =  $DB -> get_record('trust_f7w7_t_dir_sel',  array('categories_id'=> $c->id));
@@ -120,8 +119,6 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 		echo html_writer::table($table);
 	}
 
-	
-	
 	//Cuestionario Pares
 	if($id_cat==4){
 		//Obtener las subcategorias
@@ -145,27 +142,7 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 			echo html_writer::table($table);
 		
 		}
-	}
-	
-	
-	
-	$escala=  '<div style="overflow:hidden;">';
-	$escala.= '<div style="width: 20%; float:left;"><label class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('scale_type', 'block_trust_model').' :</label></div>';
-	$escala.= '<div style="width: 30%; float:left;">';
-	$escala.= '<label><spam style="font-size: 12px;">0 '.get_string('escale0', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">1 '.get_string('escale1', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">2 '.get_string('escale2', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">3 '.get_string('escale3', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">4 '.get_string('escale4', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">5 '.get_string('escale5', 'block_trust_model').'</spam></label></div>';
-
-	$escala.=  '<div style="width: 20%; float:left;"><label style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('binary_type', 'block_trust_model').' :</label></div>';
-	$escala.= '<div style="width: 30%; float:left;">';
-	$escala.= '<label><spam style="font-size: 12px;">1 '.get_string('binary1', 'block_trust_model').'</spam></label>';
-	$escala.= '<label><spam style="font-size: 12px;">2 '.get_string('binary2', 'block_trust_model').'</spam></label>';
-	$escala.= '</div></div>';
-	
-	echo $escala;	
+	}	
 	
 	//Mostrar las preguntas
 	$questions =  $DB -> get_records('trust_f7w7_t_questions',  array ('category'=>$id_cat, 'id_categories'=>$id));		
@@ -173,42 +150,41 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 		$t = new html_table();
 		$cont=0;
 		foreach($questions as $q){
-		$cont=$cont+1;
-		$row = new html_table_row();
-		$cell1= $cont.'. <input type="text" size="100%" name="'.$q->id.'" value="'.$q->pregunta.'" />';
-		$cell2= get_string($q->type, 'block_trust_model');
-		$cell3= html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('opc' => 'delete', 'id_cat' => $id_cat,'id' => $id, 'id_q' => $q->id)), get_string('delete', 'block_trust_model'));
-		$row->cells = array($cell1, $cell2, $cell3);
-		$t->data[] = $row;
+			$cont=$cont+1;
+			$row = new html_table_row();
+			$cell1=  '<div>';
+			$cell1.= '<div style="width: 50%; float:left;">'.$cont.'. '.get_string($q->type, 'block_trust_model').'</div>';
+			$cell1.= '<div style="width: 50%; float:left; text-align:right">'.html_writer::link(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateSave.php', array('opc' => 'delete', 'id_cat' => $id_cat,'id' => $id, 'id_q' => $q->id)), get_string('delete', 'block_trust_model')).'</div>';
+			$cell1.= '</div>';
+			$row->cells = array($cell1);
+			$t->data[] = $row;
+			
+			$row = new html_table_row();
+			$cell1= '<textarea type="text" rows=1 style="width:100%; resize:vertical;" name="'.$q->id.'"/>'.$q->pregunta.'</textarea>';
+			$row->cells = array($cell1);
+			$t->data[] = $row;
 		}
 		$t=html_writer::table($t);
 		$form = '<div>';
 		$form  .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/F7W7_Institutional_templateSave.php?opc=saveAll&id_cat='.$id_cat.'&id='.$id.'">';
 		$form  .= $t;
-		$form  .= '<button type="submit" >'.get_string('save', 'block_trust_model').'</button>';
+		$form  .= '<input id="id_submitbutton"  type="submit" value="'.get_string('saveAll', 'block_trust_model').'">';
 		$form  .= '</form></div>';
 		echo $form;
 	}
 	
 	//Mostrar agregar nueva pregunta
 	$nuevo  = '<div>';
-	$nuevo .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/F7W7_Institutional_templateSave.php?opc=save&id_cat='.$id_cat.'&id='.$id.'" style="display:inline"><fieldset class="invisiblefieldset">';
+	$nuevo .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/F7W7_Institutional_templateSave.php?opc=save&id_cat='.$id_cat.'&id='.$id.'"><fieldset>';
 	$nuevo .= '<legend><label>'.get_string('new_question', 'block_trust_model').'</label></legend>';
-	$nuevo .= '<input id="question" name="question" size="95%" type="text" required/>';
-	
-	$nuevo .= ' <input type="checkbox" name="scale_type" onclick="check(scale_type)" checked/><label> '.get_string('scale_type', 'block_trust_model').'</label>';
-	$nuevo .= ' <input type="checkbox" name="binary_type" onclick="check(binary_type)" /><label> '.get_string('binary_type', 'block_trust_model').'</label>';
-	
-	$nuevo .= '<button type="submit">'.get_string('add', 'block_trust_model').'</button><br />';
+	$nuevo .= '<textarea id="question" name="question" style="width:100%; resize:vertical;"  required/></textarea>';
+	$nuevo .= ' <input type="checkbox" name="scale_type" onclick="check(scale_type)" checked/><label> '.get_string('scale_type', 'block_trust_model').'&nbsp;</label>';
+	$nuevo .= ' <input type="checkbox" name="binary_type" onclick="check(binary_type)" /><label> '.get_string('binary_type', 'block_trust_model').'&nbsp;</label>';
+	$nuevo .= '<button type="submit">'.get_string('addQuestion', 'block_trust_model').'</button><br />';
 	$nuevo .= '</fieldset></form></div>';
 	echo $nuevo;
 	
-	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
-	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	echo $imgAtras.' '.html_writer::link( new moodle_url('/blocks/trust_model/F7W7_Institutional.php'), get_string('paramsInstitutional', 'block_trust_model'));
-
-	
-	
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
 

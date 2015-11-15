@@ -8,7 +8,6 @@ $u = required_param('u', PARAM_INT);
 $teacher = required_param('teacher', PARAM_INT);
 $cat = required_param('cat', PARAM_INT);
 $opc = optional_param('opc', '',PARAM_TEXT);
-
 $categoria= required_param('categoria', PARAM_INT);
 $subcategoria= required_param('subcategoria', PARAM_INT);
 
@@ -87,8 +86,6 @@ if($opc=='save'){
 		
 	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templatePairs.php',array('c' => $c, 'u' => $u, 'teacher' => $teacher,'cat' => $cat, 'categoria' => $categoria, 'subcategoria' => $subcategoria));
 	$PAGE->set_url($url);
-	
-	// Disable message notification popups while the user is viewing their messages
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -97,7 +94,6 @@ if($opc=='save'){
 	$PAGE->navbar->add(get_string('templateIns', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
 	echo '<label  class="mdl-align" style="color: #2A5A5F; font-size: 16px; font-family: cursive;">'.get_string('par_questionnaire', 'block_trust_model').'</label>';
@@ -146,14 +142,10 @@ if($opc=='save'){
 		echo '<div style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('not_questions_category', 'block_trust_model').'</div>';
 	}
 	
-	
 	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
 	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	echo '<br>';
 	echo $imgAtras.''.html_writer::link( new moodle_url('/blocks/trust_model/F7W7_Institutional_templatePairs_lstProfesores.php',array('c' => $c, 'u' => $u, 'cat' => $cat, 'categoria' => $categoria, 'subcategoria' => $subcategoria)), get_string('lst_teacher', 'block_trust_model'));
-	
-	
-	
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
 

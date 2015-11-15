@@ -2,12 +2,10 @@
 global $DB, $CFG, $USER;
 require_once('../../config.php');
 require_once($CFG->dirroot . '/blocks/trust_model/lib.php');
-
 $scorm = required_param('s', PARAM_INT); 
 $user = required_param('u', PARAM_INT);
 $course = required_param('c', PARAM_INT);
 $opc = optional_param('opc', '',PARAM_TEXT);
-
 if (isguestuser()) {
     redirect($CFG->wwwroot);
 }
@@ -28,7 +26,6 @@ if($opc=='save'){
 		}else if(isset($_POST['uno6'])){
 			$pregunta1=5.0;
 		}
-		
 		//Pregunta 2
 		$pregunta2;
 		if(isset($_POST['dos1'])){//Ingresa si esta Activo
@@ -44,7 +41,6 @@ if($opc=='save'){
 		}else if(isset($_POST['dos6'])){
 			$pregunta2=5.0;
 		}
-		
 		//Pregunta 3
 		$pregunta3;
 		if(isset($_POST['tres1'])){//Ingresa si esta Activo
@@ -75,7 +71,6 @@ if($opc=='save'){
 		}else if(isset($_POST['cuatro6'])){
 			$pregunta4=5.0;
 		}
-		
 		//Pregunta 5
 		$pregunta5;
 		if(isset($_POST['cinco1'])){//Ingresa si esta Activo
@@ -91,7 +86,6 @@ if($opc=='save'){
 		}else if(isset($_POST['cinco6'])){
 			$pregunta5=5.0;
 		}
-		
 		//Pregunta 6
 		$pregunta6;
 		if(isset($_POST['seis1'])){//Ingresa si esta Activo
@@ -122,7 +116,6 @@ if($opc=='save'){
 		}else if(isset($_POST['siete6'])){
 			$pregunta7=5.0;
 		}
-		
 		//Pregunta 8
 		$pregunta8;
 		if(isset($_POST['ocho1'])){//Ingresa si esta Activo
@@ -138,7 +131,6 @@ if($opc=='save'){
 		}else if(isset($_POST['ocho6'])){
 			$pregunta8=5.0;
 		}
-		
 		//Pregunta 9
 		$pregunta9;
 		if(isset($_POST['nueve1'])){//Ingresa si esta Activo
@@ -154,7 +146,6 @@ if($opc=='save'){
 		}else if(isset($_POST['nueve6'])){
 			$pregunta9=5.0;
 		}
-		
 		//Pregunta 10
 		$pregunta10;
 		if(isset($_POST['diez1'])){//Ingresa si esta Activo
@@ -170,7 +161,6 @@ if($opc=='save'){
 		}else if(isset($_POST['diez6'])){
 			$pregunta10=5.0;
 		}
-		
 		//Pregunta 11
 		$pregunta11;
 		if(isset($_POST['once1'])){//Ingresa si esta Activo
@@ -186,7 +176,6 @@ if($opc=='save'){
 		}else if(isset($_POST['once6'])){
 			$pregunta11=5.0;
 		}
-		
 		//Pregunta 12
 		$pregunta1;
 		if(isset($_POST['doce1'])){//Ingresa si esta Activo
@@ -202,7 +191,6 @@ if($opc=='save'){
 		}else if(isset($_POST['doce6'])){
 			$pregunta12=5.0;
 		}
-		
 		//Pregunta 13
 		$pregunta13;
 		if(isset($_POST['trece1'])){//Ingresa si esta Activo
@@ -218,7 +206,6 @@ if($opc=='save'){
 		}else if(isset($_POST['trece6'])){
 			$pregunta13=5.0;
 		}
-		
 		//Pregunta 14
 		$pregunta14;
 		if(isset($_POST['catorce1'])){//Ingresa si esta Activo
@@ -234,7 +221,6 @@ if($opc=='save'){
 		}else if(isset($_POST['catorce6'])){
 			$pregunta14=5.0;
 		}
-		
 		//Guardar por categorias
 		$teaching_curricular=($pregunta1 + $pregunta2 + $pregunta3 + $pregunta4 + $pregunta5 + $pregunta6 + $pregunta7 )/7;
 		$interface_design= ($pregunta8 + $pregunta9 + $pregunta10 + $pregunta11 + $pregunta12)/5;
@@ -246,10 +232,9 @@ if($opc=='save'){
 		//Redirigir al Scorm
 		redirect(new moodle_url('/mod/scorm/view.php', array('a'=>$scorm)));
 }else{
+	
 	$url = new moodle_url('/blocks/trust_model/F6W6_QuestionnaireScorm.php', array('s' => $scorm, 'u' => $user, 'c' => $course));
 	$PAGE->set_url($url);
-
-	// Disable message notification popups while the user is viewing their messages
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -257,22 +242,19 @@ if($opc=='save'){
 	$PAGE->navbar->add('Scorm');
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
-
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
 	echo html_writer::tag('h4', get_string('validateScorm', 'block_trust_model'));
 	echo html_writer::end_tag('div');
 
-
+	//Cuestionario
 	$questionnaire  = '<div>';
 	$questionnaire  .= '<form name="orderForm" method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/F6W6_QuestionnaireScorm.php?opc=save&s='.$scorm.'&c='.$course.'&u='.$user.'">';
 
 	$questionnaire  .= '<label class="info" style="color: #2A5A5F; font-family: cursive; font-size: 15px; font-weight: bold;">Categoría Didáctica-Curricular</label>';
 	$questionnaire  .= '<label style="color: #2A5A5F; font-size: 12px; font-weight: bold;">CONTEXTO</label>';
-
-
+	
 	$t = new html_table();
 	$row = new html_table_row();
 	$cell1  = '<label>1. Nivel formativo adecuado a la situación educativa, por ejemplo: educación secundaria, etc</label>';
@@ -285,11 +267,9 @@ if($opc=='save'){
 	$cell1.= '<label style="width: 15%;float:left; "><input type="checkbox" class="pregunta1" name="uno4" onclick="pregunta1(uno4)"/>Aceptable</label>';
 	$cell1.= '<label style="width: 15%;float:left; "><input type="checkbox" class="pregunta1" name="uno5" onclick="pregunta1(uno5)"/>Alta</label>';
 	$cell1.= '<label style="width: 15%;float:left;"><input type="checkbox" class="pregunta1" name="uno6" onclick="pregunta1(uno6)"/>Muy Alta</label></div>';
-	
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -307,7 +287,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$questionnaire  .= '<label style="color: #2A5A5F; font-size: 12px; font-weight: bold;">OBJETIVOS</label>';
@@ -327,7 +306,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -345,7 +323,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -363,7 +340,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -382,7 +358,7 @@ if($opc=='save'){
 	$t->data[] = $row;
 	$t=html_writer::table($t);
 	$questionnaire  .= $t;
-
+	
 	$questionnaire  .= '<label style="color: #2A5A5F; font-size: 12px; font-weight: bold;">TIEMPO DE APRENDIZAJE</label>';
 
 	$t = new html_table();
@@ -400,7 +376,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$questionnaire  .= '<label class="info" style="color: #2A5A5F; font-family: cursive; font-size: 15px; font-weight: bold;">Categoría Diseño de Interfaz</label>';
@@ -422,7 +397,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -440,7 +414,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$questionnaire  .= '<label style="color: #2A5A5F; font-size: 12px; font-weight: bold;">VIDEO</label>';
@@ -460,7 +433,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -478,7 +450,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -496,7 +467,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$questionnaire  .= '<label class="info" style="color: #2A5A5F; font-family: cursive; font-size: 15px; font-weight: bold;">Categoria Diseño de navegación</label>';
@@ -516,7 +486,6 @@ if($opc=='save'){
 	$row->cells = array($cell1);
 	$t->data[] = $row;
 	$t=html_writer::table($t);
-
 	$questionnaire  .= $t;
 
 	$t = new html_table();
@@ -540,7 +509,6 @@ if($opc=='save'){
 	$questionnaire  .= '</form></div>';
 
 	echo $questionnaire;
-
 	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
 	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	$url = new moodle_url('/mod/scorm/view.php', array('a'=>$scorm));

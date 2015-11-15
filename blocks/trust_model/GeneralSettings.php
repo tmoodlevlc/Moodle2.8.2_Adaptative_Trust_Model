@@ -96,8 +96,6 @@ if($opc=='save'){
 
 	$url = new moodle_url('/blocks/trust_model/GeneralSettings.php');
 	$PAGE->set_url($url);
-
-	// Disable message notification popups while the user is viewing their messages
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -105,23 +103,16 @@ if($opc=='save'){
 	$PAGE->navbar->add(get_string('generalSettings', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
-
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
 	echo html_writer::tag('h4', get_string('pluginname', 'block_trust_model'));
 	echo html_writer::end_tag('div');
 	echo '<label style="color: #2A5A5F; font-size: 13px; font-weight: bold;">'.get_string('themegeneralSettings', 'block_trust_model').'<spam style="font-size: 11px;"> (Min 0 - Max 1)</spam></label>';;
-
-	//$general_settings=  $DB -> get_record('trust_general_settings',  array('codigo' => 'trust_model'));	
+	//Variables
 	$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');	
-	
 	$t = new html_table();
-			
-	
 	if($general_settings){
-	
 		//F1W1
 		$row = new html_table_row();
 		$cell1= '<input type="checkbox" name="f1w1" onclick="check(f1w1)" checked/><label title='.get_string('obligatoryfield', 'block_trust_model').'>'.get_string('experience', 'block_trust_model').'</label>';
@@ -137,8 +128,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-		
-		
 		//F2W2
 		$row = new html_table_row();
 		$cell1= '<input type="checkbox" name="f2w2" onclick="check(f2w2)" checked/><label title='.get_string('obligatoryfield', 'block_trust_model').'>'.get_string('reputation', 'block_trust_model').'</label>';
@@ -154,7 +143,6 @@ if($opc=='save'){
 				</div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-		
 		//F3W3
 		$row = new html_table_row();
 		if($general_settings->f3w3=='true'){
@@ -176,8 +164,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-		
-
 		//F4W4
 		$row = new html_table_row();
 		if($general_settings->f4w4=='true'){
@@ -197,8 +183,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-
-		
 		//F5W5
 		$row = new html_table_row();
 		if($general_settings->f5w5=='true'){
@@ -218,8 +202,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-			
-
 		//F6W6
 		$row = new html_table_row();
 		if($general_settings->f6w6=='true'){
@@ -239,7 +221,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-
 		//F7W7
 		$row = new html_table_row();
 		if($general_settings->f7w7=='true'){
@@ -259,7 +240,6 @@ if($opc=='save'){
 				 </div>';
 		$row->cells = array($cell1);
 		$t->data[] = $row;
-
 		//F8W8
 		$row = new html_table_row();
 		if($general_settings->f8w8=='true'){
@@ -270,7 +250,6 @@ if($opc=='save'){
 		$row->cells = array($cell1);
 		$t->data[] = $row;
 
-		
 		$p1f8w8 = $DB->get_record_sql("SELECT * FROM {trust_general_settings_weigh} WHERE  name  LIKE ? ", array('p1f8w8'));
 		$p2f8w8 = $DB->get_record_sql("SELECT * FROM {trust_general_settings_weigh} WHERE  name  LIKE ? ", array('p2f8w8'));
 		$p3f8w8 = $DB->get_record_sql("SELECT * FROM {trust_general_settings_weigh} WHERE  name  LIKE ? ", array('p3f8w8'));
@@ -371,7 +350,7 @@ if($opc=='save'){
 		$row->cells = array($cell1);
 		$t->data[] = $row;
 		
-		
+		//F7W7
 		$row = new html_table_row();
 		$cell1= '<input type="checkbox" name="f7w7" checked/><label>'.get_string('institutional', 'block_trust_model').'</label>';
 		$row->cells = array($cell1);
@@ -385,7 +364,7 @@ if($opc=='save'){
 		$row->cells = array($cell1);
 		$t->data[] = $row;
 		
-
+		//F8W8
 		$row = new html_table_row();
 		$cell1= '<input type="checkbox" name="f8w8" checked/><label>'.get_string('kin', 'block_trust_model').'</label>';
 		$row->cells = array($cell1);
@@ -400,23 +379,17 @@ if($opc=='save'){
 		$row->cells = array($cell1);
 		$t->data[] = $row;
 		
-
 		$t=html_writer::table($t);
 	}
 	
-
 	$check  = '<div>';
 	$check  .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/GeneralSettings.php?opc=save">';
 	$check  .= $t;
 	$check  .= '<button id="config_button" type="submit" title="'.get_string('saveConfig', 'block_trust_model').'">'.get_string('save', 'block_trust_model').'</button>';
 	$check  .= '</form></div>';
-
 	echo $check;
-
-
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
-
 }
 
 ?>

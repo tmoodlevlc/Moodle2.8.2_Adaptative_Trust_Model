@@ -83,8 +83,6 @@ if($opc=='save'){
 		
 	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateTeacher.php',array('c' => $c, 'u' => $u, 'cat' => $cat));
 	$PAGE->set_url($url);
-	
-	// Disable message notification popups while the user is viewing their messages
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -93,17 +91,14 @@ if($opc=='save'){
 	$PAGE->navbar->add(get_string('templateIns', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
 	echo '<label  class="mdl-align" style="color: #2A5A5F; font-size: 16px; font-family: cursive;">'.get_string('teacher_questionnaire', 'block_trust_model').'</label>';
 
-	//Motrar cuestionario
 	//Obtener la categoria a la que pertenece el curso
 	$t_inst = $DB -> get_record('trust_f7w7_t_inst',  array ('course_id'=>$c));
 	
 	//Si ya valido el cuestionario Teacher
-	//$teacher_validado =  $DB -> get_records('trust_f7w7_t_tea',  array ('user_tea'=>$u, 't_inst_id'=>$t_inst->id));
 	$teacher_validado= $DB -> get_records('trust_f7w7_t_answer',  array ('cat'=>2, 't_inst_id'=>$t_inst->id, 'user_emisor'=>$u, 'user_receptor'=>$u));
 	if($teacher_validado){
 		echo '<div style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('evaluation_successfully', 'block_trust_model').'</div>';
@@ -155,9 +150,6 @@ if($opc=='save'){
 	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	echo '<br>';
 	echo $imgAtras.''.html_writer::link( new moodle_url('/blocks/trust_model/F7W7_Institutional_templateShow.php', array('c' => $c, 'u' => $u)), get_string('paramsInstitutional', 'block_trust_model'));
-	
-	
-	
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
 

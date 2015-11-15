@@ -1,29 +1,27 @@
 <?php
 require_once('../../config.php');
 require_once('lib.php');
-
 global $DB;
 $user_id = required_param('u', PARAM_INT);
 $course_id = required_param('c', PARAM_INT); 
-
 if (isguestuser()) {
     redirect($CFG->wwwroot);
 }
-
+//Impresion
 $url = new moodle_url('/blocks/trust_model/index.php', array('u' => $USER -> id, 'c' => $course_id));
 $PAGE->set_url($url);
-
-// Disable message notification popups while the user is viewing their messages
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context(context_user::instance($USER->id));
 $tm = get_string('pluginname', 'block_trust_model');
 $PAGE->navbar->add($tm);
 $PAGE->set_title("{$SITE->shortname}: $tm");
 $PAGE->set_heading("{$SITE->shortname}: $tm");
-//now the page contents
 echo $OUTPUT->header();
 echo $OUTPUT->box_start();
-
+echo html_writer::start_tag('div', array('class' => 'mdl-align'));
+$course=$DB->get_record('course', array('id' => $course_id));
+echo html_writer::tag('h4', get_string('nameCourse', 'block_trust_model').': '.$course -> fullname);
+echo html_writer::end_tag('div');
 //Imagen
 $urlImagen = new moodle_url('/blocks/trust_model/pix/items.png');
 $imagen= '<img src="'.$urlImagen. '"alt="" />';
@@ -40,10 +38,8 @@ $imagenEst1= '<img src="'.$urlimgEst1. '"alt="" />';
 $urlimgEst2 = new moodle_url('/blocks/trust_model/pix/estrellaLikeSinFondo.png');
 $imagenEst2= '<img src="'.$urlimgEst2. '"alt="" />';
 
-$course=$DB->get_record('course', array('id' => $course_id));
-echo html_writer::start_tag('div', array('class' => 'mdl-align'));
-echo html_writer::tag('h4', get_string('nameCourse', 'block_trust_model').': '.$course -> fullname);
-echo html_writer::end_tag('div');
+$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
+$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 
 //Número de Me gusta
 $cont= $DB->get_record('trust_f1w1_validate', array('user_id' => $user_id, 'course_id' => $course_id));
@@ -70,7 +66,6 @@ $row->cells = array($cell1, $cell2, $cell3);
 $t->data[] = $row;
 
 echo html_writer::table($t);
-
 
 //Nivel de confianza (Experiencia directa)
 echo '<p class="info" style="color: #2A5A5F; font-family: cursive; font-size: 15px; font-weight: bold;">'.get_string('level', 'block_trust_model').'</p>';
@@ -178,13 +173,9 @@ echo html_writer::table($t);
 
 //Grafico
 $url_grafic = new moodle_url('/blocks/trust_model/graphic/index.php', array('u'=>$user_id, 'c'=>$course_id));
-echo html_writer::tag('a', get_string('grafo', 'block_trust_model'), array('href' => $url_grafic, 'target' => '_blank')).'<br>';
-
-$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
-$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 $url = new moodle_url('/course/view.php', array('id'=>$course_id));
+echo html_writer::tag('a', get_string('grafo', 'block_trust_model'), array('href' => $url_grafic, 'target' => '_blank')).'<br>';
 echo $imgAtras.''.html_writer::link( $url, get_string('returnCourse', 'block_trust_model').': '.$course ->shortname );
-
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
 

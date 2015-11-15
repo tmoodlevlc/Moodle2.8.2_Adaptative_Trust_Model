@@ -15,24 +15,23 @@ if (isguestuser()) {
 if($campo=='interna' || $campo=='externa'){
 
 		//Obtener la categoria a la que pertenece el curso
-		$categoria= $DB->get_record_sql("SELECT mdl_course_categories.id, mdl_course_categories.path
-											FROM mdl_course
-											INNER JOIN mdl_course_categories ON mdl_course.category = mdl_course_categories.id 
-											WHERE mdl_course.id = ?",array($c));
+		$categoria= $DB->get_record_sql("SELECT course_categories.id, course_categories.path
+											FROM {course} course
+											INNER JOIN {course_categories} course_categories ON course.category = course_categories.id 
+											WHERE course.id = ?",array($c));
 		$categoriaCurso = explode("/", $categoria->path);
 		save_instancia_course_f7w7($c, $id, $campo, $categoriaCurso[1]);
 		
 		//Redirigir a la pagina
 		redirect(new moodle_url('/blocks/trust_model/F7W7_Institutional_templateShow.php',array('c' => $c, 'u' => $u)));
 }else{
-		
-	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateShow.php',array('c' => $c, 'u' => $u));
-	$PAGE->set_url($url);
-	
 	$urlImagen = new moodle_url('/blocks/trust_model/pix/items.png');
 	$imagen= '<img src="'.$urlImagen. '"alt="" />';
+	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
+	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	
-	// Disable message notification popups while the user is viewing their messages
+	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateShow.php',array('c' => $c, 'u' => $u));
+	$PAGE->set_url($url);
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -41,10 +40,8 @@ if($campo=='interna' || $campo=='externa'){
 	$PAGE->navbar->add(get_string('templateIns', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
-
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
 	echo html_writer::tag('h4', get_string('pluginname', 'block_trust_model'));
 	echo html_writer::end_tag('div');
@@ -105,10 +102,10 @@ if($campo=='interna' || $campo=='externa'){
 	//Si es Par
 	if($institutional_curso){
 		//Obtener la subcategoria a la que pertenece el curso
-		$categoria= $DB->get_record_sql("SELECT mdl_course_categories.id, mdl_course_categories.path
-											FROM mdl_course
-											INNER JOIN mdl_course_categories ON mdl_course.category = mdl_course_categories.id 
-											WHERE mdl_course.id = ?",array($c));
+		$categoria= $DB->get_record_sql("SELECT course_categories.id, course_categories.path
+											FROM {course} course
+											INNER JOIN {course_categories} course_categories ON course.category = course_categories.id 
+											WHERE course.id = ?",array($c));
 		$categoriaCurso = explode("/", $categoria->path);	
 
 		if(count($categoriaCurso)>=3){//Verificar que si tiene subcategoria
@@ -120,7 +117,6 @@ if($campo=='interna' || $campo=='externa'){
 			}
 		}
 	}				
-	
 	
 	//Mostrar los cuestionarios habilitados
 	$items='';
@@ -154,18 +150,11 @@ if($campo=='interna' || $campo=='externa'){
 		}
 	}
 
-	
 	echo $t;
 	echo $items;
-	
-	$urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
-	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	$course=$DB->get_record('course', array('id' => $c));
 	echo '<br>';
 	echo $imgAtras.''.html_writer::link( new moodle_url('/course/view.php', array('id'=>$c)), get_string('returnCourse', 'block_trust_model').': '.$course ->shortname );
-	
-	
-	
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
 

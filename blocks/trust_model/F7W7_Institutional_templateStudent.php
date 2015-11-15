@@ -84,8 +84,6 @@ if($opc=='save'){
 		
 	$url = new moodle_url('/blocks/trust_model/F7W7_Institutional_templateStudent.php',array('c' => $c, 'u' => $u, 'teacher' => $teacher,'cat' => $cat ));
 	$PAGE->set_url($url);
-	
-	// Disable message notification popups while the user is viewing their messages
 	$PAGE->set_pagelayout('standard');
 	$PAGE->set_context(context_user::instance($USER->id));
 	$tm = get_string('pluginname', 'block_trust_model');
@@ -94,13 +92,10 @@ if($opc=='save'){
 	$PAGE->navbar->add(get_string('templateIns', 'block_trust_model'));
 	$PAGE->set_title("{$SITE->shortname}: $tm");
 	$PAGE->set_heading("{$SITE->shortname}: $tm");
-	//now the page contents
 	echo $OUTPUT->header();
 	echo $OUTPUT->box_start();
 	echo '<label  class="mdl-align" style="color: #2A5A5F; font-size: 16px; font-family: cursive;">'.get_string('student_questionnaire', 'block_trust_model').'</label>';
 
-	//Motrar cuestionario
-	
 	//Obtener la categoria a la que pertenece el curso
 	$categoria= $DB -> get_record('trust_f7w7_t_inst',  array ('course_id'=>$c));
 	//Obtener las preguntas de la categoria
@@ -150,9 +145,6 @@ if($opc=='save'){
 	$imgAtras= '<img src="'.$urlAtras. '"alt="" />';
 	echo '<br>';
 	echo $imgAtras.''.html_writer::link( new moodle_url('/blocks/trust_model/F7W7_Institutional_templateStudent_lstProfesores.php',array('c' => $c, 'u' => $u, 'cat' => $cat)), get_string('lst_teacher', 'block_trust_model'));
-	
-	
-	
 	echo $OUTPUT->box_end();
 	echo $OUTPUT->footer();
 
