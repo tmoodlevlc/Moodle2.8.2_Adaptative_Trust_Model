@@ -1,6 +1,7 @@
 <?php
 require_once("../../config.php");
 require_once($CFG->dirroot . '/blocks/trust_model/lib.php');
+require_once($CFG->libdir.'/accesslib.php');
 global $USER, $COURSE;
 //Parametros
 $opc = required_param('opc', PARAM_INT);
@@ -56,13 +57,15 @@ if($opc==1){//Modelo de confianza Foro
 							$file_id = $_GET['f'];
 							$file_user = $_GET['fu'];
 							$objeto = $DB->get_record('resource', array('id' => $resource_id));
-							if($url==''){
-								$url = new moodle_url('/course/view.php', array('id'=>$objeto->course));
-							}
-							//No tomo encuenta el user y el curso recibido como parametro.
-							if($file_user != $USER->id){ //Controla, no calificar un recurso creado por el mismo usuario
-								$bandera=insert_history_file($USER->id,$objeto->course,$resource_id,$file_id,$file_user,$action_mc,$value_date);
-								if(!$bandera){//Si ya califico el recurso
+							$url= ($url=='') ? new moodle_url('/course/view.php', array('id'=>$objeto->course)) : $url;
+							if(!isguestuser()){
+								//No tomo encuenta el user y el curso recibido como parametro.
+								if($file_user != $USER->id){ //Controla, no calificar un recurso creado por el mismo usuario
+									$bandera=insert_history_file($USER->id,$objeto->course,$resource_id,$file_id,$file_user,$action_mc,$value_date);
+									if(!$bandera){//Si ya califico el recurso
+										$bandera=1;
+									}
+								}else{
 									$bandera=1;
 								}
 							}else{
@@ -82,7 +85,6 @@ if($opc==1){//Modelo de confianza Foro
 	}
 }
 if($bandera){
-	require_once("../../config.php");
 	header("Location:$url");
 }else{
 		?>

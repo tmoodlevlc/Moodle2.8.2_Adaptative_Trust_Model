@@ -158,6 +158,7 @@ if($general_settings){
 		//$url_file  = moodle_url::make_pluginfile_url( $file->get_contextid () , $file -> get_component() , $file->get_filearea () ,0 ,$file -> get_filepath () , $file->get_filename ()) ;
 		//echo "<a href=\"$url_file\">Descargar xml</a><br>";
 		
+		
 		//Mostrar el puntaje promedio, si ya valido el paquete Scorm
 		if($DB->record_exists('trust_f6w6_quality', array('scorm_id' => $scorm->id,'user_validate' => $USER->id, 'course_id' => $course->id))){											
 				

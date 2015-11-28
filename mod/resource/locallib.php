@@ -110,32 +110,33 @@ function resource_display_embed($resource, $cm, $course, $file) {
 	//echo $trust_model;
 	//====================================================
 	
-	//Controla, no calificar un recurso creado por el mismo usuario
-	$like= get_string('like', 'block_trust_model');
-	$not_like= get_string('not_like', 'block_trust_model');
-	$user_id = $USER->id;
-	$course_id = $COURSE->id;
-	$resource_id = $resource->id;
-	$file_id= $file->get_id();
-    $file_user = $file->get_userid();
-		
-	if($user_id != $file_user){
-		//Verifica si ya evaluo el usuario 
-		$count = $DB->count_records('trust_f1w1_history_file', array('user_id' => $user_id,'course_id' => $course_id, 'file_id' => $file_id, 'file_user' => $file_user));
-		if($count==0){//Ingresa si no existe un registro, no evaluo 
-			$url = $PAGE->url;
-			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id,'f' => $file_id,'fu' => $file_user, 'mc' => +1, 'url' => $url)),$like);
-			$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id, 'f' => $file_id,'fu' => $file_user,'mc' => -1, 'url' => $url)),$not_like);
+	if(!isguestuser()){
+		$like= get_string('like', 'block_trust_model');
+		$not_like= get_string('not_like', 'block_trust_model');
+		$user_id = $USER->id;
+		$course_id = $COURSE->id;
+		$resource_id = $resource->id;
+		$file_id= $file->get_id();
+		$file_user = $file->get_userid();
+		//Controla, no calificar un recurso creado por el mismo usuario
+		if($user_id != $file_user){
+			//Verifica si ya evaluo el usuario 
+			$count = $DB->count_records('trust_f1w1_history_file', array('user_id' => $user_id,'course_id' => $course_id, 'file_id' => $file_id, 'file_user' => $file_user));
+			if($count==0){//Ingresa si no existe un registro, no evaluo 
+				$url = $PAGE->url;
+				$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id,'f' => $file_id,'fu' => $file_user, 'mc' => +1, 'url' => $url)),$like);
+				$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id, 'f' => $file_id,'fu' => $file_user,'mc' => -1, 'url' => $url)),$not_like);
+			}else{
+				$comandoTrust[]= $like;
+				$comandoTrust[]= $not_like;
+			}
 		}else{
 			$comandoTrust[]= $like;
 			$comandoTrust[]= $not_like;
 		}
-	}else{
-		$comandoTrust[]= $like;
-		$comandoTrust[]= $not_like;
+		$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands')).html_writer::empty_tag('br');
+		echo $trust_model;
 	}
-	$trust_model = html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands')).html_writer::empty_tag('br');
-	echo $trust_model;
 	//====================================================
 	
 			
@@ -365,25 +366,27 @@ function resource_get_optional_details($resource, $cm) {
     }
 	
 	// ==================Trust Model==========================
-	$like= get_string('like', 'block_trust_model');
-	$not_like= get_string('not_like', 'block_trust_model');
-	//$file_user='';
-	//$user_id = $USER->id;
-	$course_id = $COURSE->id;
-	$resource_id = $resource->id;
-	//Obtiene el id del file y del usuario
-	$context = context_module::instance($cm->id);
-	$fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_resource', 'content', 0, 'sortorder DESC, id ASC', false);
-	foreach ($files as $file) {
-			$file_id= $file->get_id();
-            $file_user = $file->get_userid();
-    }
-	
-	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id,'f' => $file_id,'fu' => $file_user, 'mc' => +1)),$like);
-	$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id, 'f' => $file_id,'fu' => $file_user,'mc' => -1)),$not_like);
-	
-	$details .=  html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));
+	if(!isguestuser()){
+		$like= get_string('like', 'block_trust_model');
+		$not_like= get_string('not_like', 'block_trust_model');
+		//$file_user='';
+		//$user_id = $USER->id;
+		$course_id = $COURSE->id;
+		$resource_id = $resource->id;
+		//Obtiene el id del file y del usuario
+		$context = context_module::instance($cm->id);
+		$fs = get_file_storage();
+		$files = $fs->get_area_files($context->id, 'mod_resource', 'content', 0, 'sortorder DESC, id ASC', false);
+		foreach ($files as $file) {
+				$file_id= $file->get_id();
+				$file_user = $file->get_userid();
+		}
+		
+		$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id,'f' => $file_id,'fu' => $file_user, 'mc' => +1)),$like);
+		$comandoTrust[] = html_writer::link(new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', array('opc' => 7,'u' => $USER->id, 'c' => $course_id, 'r' => $resource_id, 'f' => $file_id,'fu' => $file_user,'mc' => -1)),$not_like);
+		
+		$details .=  html_writer::tag('div', implode(' | ', $comandoTrust), array('class'=>'commands'));
+	}	
 	//====================================================
 	
 	return $details;
