@@ -96,7 +96,8 @@ if(!isguestuser()){
 	$params['pageid'] = $page_id;
 	$consulta= $DB -> get_record_sql("$select", $params, $limitfrom='', $limitnum='');
 
-	$page_user= $consulta->userid;
+	//$page_user= $consulta->userid;
+	$page_user= empty($consulta) ? 0 : $consulta->userid; //Cuando el Curso se realizo por backup
 
 	$like= get_string('like', 'block_trust_model');
 	$not_like= get_string('not_like', 'block_trust_model');

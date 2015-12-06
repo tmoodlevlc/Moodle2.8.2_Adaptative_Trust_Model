@@ -189,7 +189,8 @@ if(!isguestuser()){
 	$params['bookid'] = $book_id;
 	$consulta= $DB -> get_record_sql("$select", $params, $limitfrom='', $limitnum='');
 
-	$book_user= $consulta->userid;
+	//$book_user= $consulta->userid;
+	$book_user= empty($consulta) ? 0 : $consulta->userid; //Cuando el Curso se realizo por backup
 
 	$like= get_string('like', 'block_trust_model');
 	$not_like= get_string('not_like', 'block_trust_model');

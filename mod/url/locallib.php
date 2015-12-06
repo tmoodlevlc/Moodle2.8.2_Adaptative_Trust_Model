@@ -340,7 +340,8 @@ function url_display_embed($url, $cm, $course) {
 		$params['course_id'] = $course_id;
 		$params['urlid'] = $url_id;
 		$consulta= $DB -> get_record_sql("$select", $params, $limitfrom='', $limitnum='');
-		$url_user= $consulta->userid;
+		//$url_user= $consulta->userid;
+		$url_user= empty($consulta) ? 0 : $consulta->userid; //Cuando el Curso se realizo por backup
 		
 		$like= get_string('like', 'block_trust_model');
 		$not_like= get_string('not_like', 'block_trust_model');
