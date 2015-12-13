@@ -213,6 +213,7 @@ if($general_settings){
 			}else if($promedioCategoria2 >4.5 && $promedioCategoria2 <= 5){
 				$stringCategoria2=get_string('scale5', 'block_trust_model');
 			}
+	
 			
 			if ($promedioCategoria3 <= 1){
 				$stringCategoria3=get_string('scale0', 'block_trust_model');
@@ -221,7 +222,7 @@ if($general_settings){
 			}else if($promedioCategoria3 > 1.5 && $promedioCategoria3 <= 2.5 ){
 				$stringCategoria3=get_string('scale2', 'block_trust_model');
 			}else if($promedioCategoria3 > 2.5 && $promedioCategoria3 <= 3.5){
-				$stringCategoria2=get_string('scale3', 'block_trust_model');
+				$stringCategoria3=get_string('scale3', 'block_trust_model');
 			}else if($promedioCategoria3 >3.5 && $promedioCategoria3 <= 4.5){
 				$stringCategoria3=get_string('scale4', 'block_trust_model');
 			}else if($promedioCategoria3 >4.5 && $promedioCategoria3 <= 5){

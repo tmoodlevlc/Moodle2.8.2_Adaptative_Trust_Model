@@ -31,7 +31,7 @@ echo html_writer::tag('h5', get_string('teacher', 'block_trust_model'));
 //Imagenes
 $imgSel = new moodle_url('/blocks/trust_model/pix/check_color.png');
 $imgUrlSel= '<img src="'.$imgSel. '"alt="" />';
-$urlimgEst2 = new moodle_url('/blocks/trust_model/pix/estrellaLike.png');
+$urlimgEst2 = new moodle_url('/blocks/trust_model/pix/estrellaLikeSinFondo.png');
 $imagenEst2= '<img src="'.$urlimgEst2. '"alt="" title="'.get_string('studentSuggested', 'block_trust_model').'" />';
 $urlAtras = new moodle_url('/blocks/trust_model/pix/atras.png');
 $imgAtras= '<img src="'.$urlAtras. '"alt="" />';

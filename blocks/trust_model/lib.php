@@ -1305,7 +1305,7 @@ function combination_pairs_f7w7($categories,$subcategories){
 									INNER JOIN mdl_context ON mdl_context.id = mdl_role_assignments.contextid
 									INNER JOIN mdl_course ON mdl_course.id = mdl_context.instanceid
 									INNER JOIN mdl_course_categories ON mdl_course_categories.id = mdl_course.category
-									WHERE mdl_role.id = ? AND mdl_course_categories.path LIKE '%$cat->path%' GROUP BY mdl_user.id ORDER BY mdl_user.lastname, mdl_user.firstname  ASC ", 
+									WHERE mdl_role.id = ? AND mdl_course_categories.path LIKE '%$cat->path/%' GROUP BY mdl_user.id ORDER BY mdl_user.lastname, mdl_user.firstname  ASC ", 
 									array($roleTeacher->id));
 
 	$longitud = count($lstTeacher);

@@ -90,18 +90,19 @@ if($opc=='save' || $opc=='delete' || $opc=='saveAll' || $opc=='dir' || $opc=='pa
 			$lstTeacher= $DB->get_records_sql("SELECT user.id as userid, user.firstname, user.lastname, course.id as courseid
 											FROM {user} user
 											INNER JOIN {role_assignments} role_assignments ON user.id = role_assignments.userid 
-											INNER JOIN {role} role ON role.id = role_assignments.roleid
+											INNER JOIN {role} role ON role.id = role_assignments.roleid AND role.id = ?
 											INNER JOIN {context} context ON context.id = role_assignments.contextid
 											INNER JOIN {course} course ON course.id = context.instanceid
 											INNER JOIN {course_categories} course_categories ON course_categories.id = course.category
-											WHERE role.id = ? AND course_categories.path LIKE '%$c->path%' GROUP BY user.id ORDER BY user.lastname, user.firstname  ASC ", 
+											WHERE course_categories.path LIKE '%$c->path/%' GROUP BY user.id ORDER BY user.lastname, user.firstname  ASC ", 
 											array($roleTeacher->id));
+											 
 			//Si existe un directivo ya seleccionado
 			$directiveActual =  $DB -> get_record('trust_f7w7_t_dir_sel',  array('categories_id'=> $c->id));
 			$row = new html_table_row();
 			$cell2= '<div style="overflow:hidden;">';
 			foreach($lstTeacher as $t){//Recorro los profesores
-				$cell2.='<label style="width: 50%; float:left;">'.$imagen.$t->lastname.' '.$t->firstname.'</label>';
+				$cell2.='<label style="width: 50%; float:left;">'.$imagen.strtoupper($t->lastname).' '.strtoupper($t->firstname).'</label>';
 				if($directiveActual){
 					if ($directiveActual->user_id==$t->userid){
 						$cell2.='<label style="width: 50%;float:left;">'.get_string('directive', 'block_trust_model').'</label>';			
