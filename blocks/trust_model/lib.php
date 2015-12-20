@@ -1305,7 +1305,8 @@ function combination_pairs_f7w7($categories,$subcategories){
 									INNER JOIN mdl_context ON mdl_context.id = mdl_role_assignments.contextid
 									INNER JOIN mdl_course ON mdl_course.id = mdl_context.instanceid
 									INNER JOIN mdl_course_categories ON mdl_course_categories.id = mdl_course.category
-									WHERE mdl_role.id = ? AND mdl_course_categories.path LIKE '%$cat->path/%' GROUP BY mdl_user.id ORDER BY mdl_user.lastname, mdl_user.firstname  ASC ", 
+									WHERE mdl_role.id = ? AND mdl_course_categories.path LIKE '%$cat->path/%' 
+									GROUP BY mdl_user.id ORDER BY mdl_user.lastname, mdl_user.firstname  ASC ", 
 									array($roleTeacher->id));
 
 	$longitud = count($lstTeacher);
@@ -1332,9 +1333,11 @@ function institutional_f7w7($courseid, $userid){
 		$rol= rolParticipante($courseid, $userid);
 		if($rol==2){ //Si es docente
 			if($config->template=='true'){ //Si la configuracion esta guardada desde los cuestionarios pre establecidos
-				$f7w7_t_answer= $DB->get_record_sql("SELECT t1.user_receptor, t1.t_inst_id, count(*) as cont, SUM(value) as suma FROM {trust_f7w7_t_answer} t1
-				INNER JOIN {trust_f7w7_t_inst}  t2 ON t1.t_inst_id =  t2.id
-				WHERE t2.course_id = ? AND t1.user_receptor = ? GROUP BY user_receptor, t_inst_id", array($courseid, $userid));
+				$f7w7_t_answer= $DB->get_record_sql("SELECT t1.user_receptor, t1.t_inst_id, count(*) as cont, SUM(value) as suma 
+													FROM {trust_f7w7_t_answer} t1
+													INNER JOIN {trust_f7w7_t_inst}  t2 ON t1.t_inst_id =  t2.id
+													WHERE t2.course_id = ? AND t1.user_receptor = ? 
+													GROUP BY user_receptor, t_inst_id", array($courseid, $userid));
 				$f7w7 = ($f7w7_t_answer) ? $f7w7_t_answer->suma/$f7w7_t_answer->cont : 0; 
 				
 			}else if($config->web_service=='true'){//Si la configuracion esta guardada desde Web Service

@@ -414,4 +414,41 @@ if (empty($CFG->forceloginforprofiles) || $currentuser || has_capability('moodle
 
 echo '</div>';  // Userprofile class.
 
+//------------------------------------Modelo de Confianza en Toda la Comunidad------------------------------------------
+$imagen= '<img src="'.new moodle_url('/blocks/trust_model/pix/items.png'). '"alt="" />';
+$consulta = $DB->get_records_sql("SELECT category.id, category.name, SUM(trust.trust_level) as trust, categoryPadre.name  as categorypadre
+									FROM {trust} trust
+									INNER JOIN {course}  course ON course.id =  trust.course_id 
+									INNER JOIN {course_categories}  category ON category.id =  course.category
+									LEFT JOIN {course_categories}  categoryPadre ON category.path LIKE  
+									                                                CONCAT('%', categoryPadre.path ,'/%')  AND categoryPadre.parent=0
+									WHERE trust.user_id = ?  
+									GROUP BY category.id, category.name,  category.path, categoryPadre.name", array($id));
+									
+
+foreach($consulta as $category){
+	echo strtoupper($category->categorypadre).'<br>';
+	echo  strtoupper($category->name).
+	      ' ('.
+		  get_string('trust_level', 'block_trust_model').
+		  ': '.
+		  $category->trust.
+		  ')';
+	$subconsulta = $DB->get_records_sql("SELECT course.fullname, trust.trust_level
+									FROM {trust} trust
+									INNER JOIN {course}  course ON course.id =  trust.course_id 
+									INNER JOIN {course_categories}  category ON category.id =  course.category AND category.id= ?
+									WHERE trust.user_id = ? ", array($category->id, $id));
+	$table = new html_table();
+	foreach($subconsulta as $curso){
+		$row = new html_table_row();
+		$cell1= $imagen.$curso->fullname;
+		$cell2= $curso->trust_level;
+		$row->cells = array($cell1, $cell2);
+		$table->data[] = $row;
+	}
+	echo html_writer::table($table);
+}
+
+
 echo $OUTPUT->footer();
