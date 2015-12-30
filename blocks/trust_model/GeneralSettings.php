@@ -42,7 +42,7 @@ if($opc=='save'){
 	}else{$f8w8='false';}
 	
 	//Guardar en la base de datos
-	save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, $f8w8);
+	save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, $f8w8, $_POST['umbral']);
 	
 	//Guardar los pesos
 	$p1f1w1=$_POST['p1f1w1'];
@@ -108,7 +108,6 @@ if($opc=='save'){
 	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
 	echo html_writer::tag('h4', get_string('pluginname', 'block_trust_model'));
 	echo html_writer::end_tag('div');
-	echo '<label style="color: #2A5A5F; font-size: 13px; font-weight: bold;">'.get_string('themegeneralSettings', 'block_trust_model').'<spam style="font-size: 11px;"> (Min 0 - Max 1)</spam></label>';;
 	//Variables
 	$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');	
 	$t = new html_table();
@@ -263,6 +262,23 @@ if($opc=='save'){
 		$t->data[] = $row;
 		
 		$t=html_writer::table($t);
+		
+		
+		//Umbral
+		$umbral = new html_table();
+		
+		$row = new html_table_row();
+		$cell1= get_string('textUmbral', 'block_trust_model');
+		$row->cells = array($cell1);
+		$umbral->data[] = $row;
+		
+		$row = new html_table_row();
+		$cell1= '<input type="number" min="1" name="umbral" value="'.$general_settings->umbral.'" required/>';
+		$row->cells = array($cell1);
+		$umbral->data[] = $row;
+		
+		$umbral=html_writer::table($umbral);
+		
 	
 	}else{
 		//F1W1
@@ -380,11 +396,35 @@ if($opc=='save'){
 		$t->data[] = $row;
 		
 		$t=html_writer::table($t);
+		
+		//Umbral
+		$umbral = new html_table();
+		
+		$row = new html_table_row();
+		$cell1= get_string('textUmbral', 'block_trust_model');
+		$row->cells = array($cell1);
+		$umbral->data[] = $row;
+		
+		$row = new html_table_row();
+		$cell1= '<input type="number" min="1" name="umbral" required/>';
+		$row->cells = array($cell1);
+		$umbral->data[] = $row;
+		
+		$umbral=html_writer::table($umbral);
+	
 	}
 	
 	$check  = '<div>';
 	$check  .= '<form method="post" action="'.$CFG->wwwroot.'/blocks/trust_model/GeneralSettings.php?opc=save">';
+	$check  .= '<label style="color: #2A5A5F; font-size: 13px; font-weight: bold;">'.
+					get_string('themegeneralSettings', 'block_trust_model').
+					'<spam style="font-size: 11px;"> (Min 0 - Max 1)</spam>
+				</label>';
 	$check  .= $t;
+	$check  .=  '<label style="color: #2A5A5F; font-size: 13px; font-weight: bold;">'.
+					get_string('titleUmbral', 'block_trust_model').
+				'</label>';
+	$check  .= $umbral;	
 	$check  .= '<button id="config_button" type="submit" title="'.get_string('saveConfig', 'block_trust_model').'">'.get_string('save', 'block_trust_model').'</button>';
 	$check  .= '</form></div>';
 	echo $check;

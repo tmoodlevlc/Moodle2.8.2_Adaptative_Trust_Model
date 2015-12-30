@@ -415,6 +415,22 @@ if (empty($CFG->forceloginforprofiles) || $currentuser || has_capability('moodle
 echo '</div>';  // Userprofile class.
 
 //------------------------------------Modelo de Confianza en Toda la Comunidad------------------------------------------
+
+$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');
+if($general_settings){
+	$tiempoUmbral = $general_settings->umbral * 86400; //se convierte dias a segundos
+	$tiempoDiferencia = time() - $user->lastaccess;	
+	if($tiempoDiferencia>$tiempoUmbral){
+		$DB->execute("UPDATE
+						{trust} trust
+					SET
+						trust.state = 'false'
+					WHERE trust.user_id = ?  AND trust.state = 'true'", array($user->id));
+	}
+}
+
+$trustTotalHab = 0;
+$trustTotalDes = 0;
 $imagen= '<img src="'.new moodle_url('/blocks/trust_model/pix/items.png'). '"alt="" />';
 $consulta = $DB->get_records_sql("SELECT category.id, category.name, SUM(trust.trust_level) as trust, categoryPadre.name  as categorypadre
 									FROM {trust} trust
@@ -423,32 +439,56 @@ $consulta = $DB->get_records_sql("SELECT category.id, category.name, SUM(trust.t
 									LEFT JOIN {course_categories}  categoryPadre ON category.path LIKE  
 									                                                CONCAT('%', categoryPadre.path ,'/%')  AND categoryPadre.parent=0
 									WHERE trust.user_id = ?  
-									GROUP BY category.id, category.name,  category.path, categoryPadre.name", array($id));
-									
-
+									GROUP BY category.id, category.name,  category.path, categoryPadre.name", array($user->id));				
 foreach($consulta as $category){
+	$subconsulta = $DB->get_records_sql("SELECT course.fullname, trust.trust_level, trust.state
+									FROM {trust} trust
+									INNER JOIN {course}  course ON course.id =  trust.course_id 
+									INNER JOIN {course_categories}  category ON category.id =  course.category AND category.id= ?
+									WHERE trust.user_id = ? ORDER BY trust.state ASC", array($category->id, $user->id));
+	$table = new html_table();
+	$trustTotalCat = 0;
+	foreach($subconsulta as $curso){
+		$row = new html_table_row();
+		$cell1= $imagen.$curso->fullname;
+		$cell2= $curso->trust_level;
+		if($curso->state=='false'){
+			$cell3= get_string('courseUmbral', 'block_trust_model');
+			$trustTotalDes = $trustTotalDes + $curso->trust_level;
+		}else{
+			$cell3= '';
+			$trustTotalCat = $trustTotalCat + $curso->trust_level;
+			$trustTotalHab = $trustTotalHab + $curso->trust_level;
+		}
+		$row->cells = array($cell1, $cell2, $cell3);
+		$table->data[] = $row;
+	}
 	echo strtoupper($category->categorypadre).'<br>';
 	echo  strtoupper($category->name).
 	      ' ('.
 		  get_string('trust_level', 'block_trust_model').
 		  ': '.
-		  $category->trust.
+		  number_format($trustTotalCat, 2, '.', '').
 		  ')';
-	$subconsulta = $DB->get_records_sql("SELECT course.fullname, trust.trust_level
-									FROM {trust} trust
-									INNER JOIN {course}  course ON course.id =  trust.course_id 
-									INNER JOIN {course_categories}  category ON category.id =  course.category AND category.id= ?
-									WHERE trust.user_id = ? ", array($category->id, $id));
-	$table = new html_table();
-	foreach($subconsulta as $curso){
-		$row = new html_table_row();
-		$cell1= $imagen.$curso->fullname;
-		$cell2= $curso->trust_level;
-		$row->cells = array($cell1, $cell2);
-		$table->data[] = $row;
-	}
 	echo html_writer::table($table);
 }
 
+if($trustTotalDes>0){
+	echo html_writer::start_tag('div', array('class' => 'mdl-align'));
+	echo html_writer::tag('spam', strtoupper(get_string('courseUmbral', 'block_trust_model')).
+								' ('.
+								number_format($trustTotalDes, 2, '.', '').
+								')'
+						);
+	echo html_writer::end_tag('div');
+}
+echo html_writer::start_tag('div', array('class' => 'mdl-align'));
+echo html_writer::tag('h5', strtoupper(get_string('trust_level', 'block_trust_model')).
+							' ('.
+							number_format($trustTotalHab, 2, '.', '').
+							')'
+					);
+echo html_writer::end_tag('div');
+//------------------------------------------------------------------------------------------------
 
 echo $OUTPUT->footer();

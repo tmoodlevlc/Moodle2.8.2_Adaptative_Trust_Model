@@ -149,9 +149,13 @@ $string['error'] = 'Error al conectarce con el Servicio Web';
 $string['f7w7webService']='PARÁMETRO INSTITUCIONAL. Al conectarse usted como administrador a un Servicio Web, automáticamente los registros 
 							que pertenecen	a esta comunidad se actualizaran con los valores registrados en el Servicio Web.';
 $string['f7w7webServiceDescription'] = 'Se actualizo los registros de la Base de Datos, asignando a cada usuario los valores correspondientes al Parametro Institucional.
-(Evaluación Estudiante, Evaluación Docente, Evaluación Directivo, Evaluación Par)' ;
+										(Evaluación Estudiante, Evaluación Docente, Evaluación Directivo, Evaluación Par)' ;
 $string['webServiceFunction'] = 'Función';
 $string['webServiceUri'] = 'URL del Servicio Web';
 $string['webServiceLocation'] = 'Ubicación del archivo que aplica la solicitud' ;
+
+$string['titleUmbral'] = 'Umbral de actividad';
+$string['textUmbral'] = 'Tiempo en días';
+$string['courseUmbral'] = 'Inhabilitado por el Umbral';
 
 

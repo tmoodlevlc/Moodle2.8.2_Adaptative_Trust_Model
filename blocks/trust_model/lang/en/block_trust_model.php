@@ -154,3 +154,7 @@ $string['f7w7webServiceDescription'] = 'Records database, giving each user the v
 $string['webServiceFunction'] = 'Function';
 $string['webServiceUri'] = 'URL of the Web Service';
 $string['webServiceLocation'] = 'File location apply the request';
+$string['titleUmbral'] = 'Activity umbral';
+$string['textUmbral'] = 'Time in days';
+$string['courseUmbral'] = 'Disabled by unbral';
+

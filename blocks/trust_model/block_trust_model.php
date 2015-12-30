@@ -47,94 +47,43 @@ class block_trust_model extends block_base {
 		
 		//Muestra información de acuerdo al rol del usuario
 		if(isguestuser() or !isloggedin()){ 
-					$this->content->text .= '<div class="info texto">'.get_string('signin', 'block_trust_model').'</div>';
+			$this->content->text .= '<div class="info texto">'.get_string('signin', 'block_trust_model').'</div>';
 		}else{
-				//CONFIGURACION GENERAL DEL MODULO
-				$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');
-				//Obtengo el contexto de curso
-				$context = context_course::instance($COURSE-> id);             
-				//Obtengo los roles del usuario que tiene asignado en el contexto del curso
-				$roles = get_user_roles ( $context , $USER -> id ,  true);
-				if(empty($roles)){
-						$this->content->text .= '<div class="info texto">'.get_string('course', 'block_trust_model').'</div>';
-						//-----------------------------------------ADMINISTRADOR Contexto Sitio/Contexto Curso-------------------------------------
-						if(is_siteadmin($USER->id)){ 
-							//---------------------------Configuración general (Que parametros seran habilitados) y pesos--------------------------
-							$generalSettingsUrl= '/blocks/trust_model/GeneralSettings.php';
-							$this->content->text .= $imagen.html_writer::link(new moodle_url($generalSettingsUrl), get_string('generalSettings', 'block_trust_model')).'<br>';
-							if($general_settings){
-								//-------------------------------------------------Servicio Web-------------------------------------------------------
-								$webService= '/blocks/trust_model/WebService.php';
-								$this->content->text .= $imagen.html_writer::link(new moodle_url($webService), get_string('webService', 'block_trust_model')).'<br>';
-								//----------------------------Configuración General Seguridad (crear nuevos items de seguridad)----------------------
-								if($general_settings->f5w5=='true'){
-									$f5w5Security= '/blocks/trust_model/F5W5_Security.php';
-									$this->content->text .= $imagen.html_writer::link(new moodle_url($f5w5Security), get_string('securityParameters', 'block_trust_model')).'<br>';
-									securityDateEstatic_f5w5();	
-								}
-								//------------------------------Configuración General F7W7 Institucional (templates o servicio web)-------------
-								if($general_settings->f7w7=='true'){
-									$f7w7Institutional= '/blocks/trust_model/F7W7_Institutional.php';
-									$this->content->text .= $imagen.html_writer::link(new moodle_url($f7w7Institutional), get_string('paramsInstitutional', 'block_trust_model'));
-								}
-								if($COURSE -> id != 1){
-									//----------------------PARAMETROS A EJECUTAR SEGUN LA CONFIGURACIÓN DEL ADMINISTRADOR--------------------
-									$f1w1 = f1w1_Previous_Experience($USER -> id, $COURSE -> id);
-									$f2w2 = inferencia_f2w2($USER -> id, $COURSE -> id);
-									if($general_settings->f3w3=='true'){
-										$f3w3 = 1.00;
-									}else{
-										$f3w3 = Null;
-									}
-									if($general_settings->f4w4=='true'){
-										$f4w4 = knowledge_f4w4($USER -> id, $COURSE -> id);
-									}else{
-										$f4w4 = Null;
-									}
-									if($general_settings->f5w5=='true'){
-										$f5w5 = securityTrust_f5w5();
-									}else{
-										$f5w5 = Null;
-									}
-									if($general_settings->f6w6=='true'){
-										$f6w6= quality_f6w6($COURSE -> id);
-									}else{
-										$f6w6 = Null;
-									}
-									if($general_settings->f7w7=='true'){
-										$f7w7= institutional_f7w7($COURSE -> id, $USER -> id);
-									}else{
-										$f7w7= Null;
-									}
-									if($general_settings->f8w8=='true'){
-										$f8w8 = kin_f8w8($USER -> id);
-									}else{
-										$f8w8 = Null;
-									}					
-									$valueTrust= $this->trust($f1w1, $f2w2,$f3w3,$f4w4,$f5w5,$f6w6,$f7w7,$f8w8);
-									
-									//-----------------------Ver Detalles-----------------------------------------------------------------
-									$details = '/blocks/trust_model/index.php';
-									$this->content->text = $imagen.html_writer::link(new moodle_url($details, array('u' => $USER -> id, 'c' => $COURSE -> id)), get_string('details', 'block_trust_model')).html_writer::empty_tag('br');
-									//------------------------Configurar experiencia directa (Seleccionar el docente y estudiante que validara me gusta y no me gusta)----------------
-									$f1w1_validationConfig = '/blocks/trust_model/F1W1_ValidationConfig.php';
-									$this->content->text .= $imagen.html_writer::link(new moodle_url($f1w1_validationConfig, array('c' => $COURSE -> id)), get_string('configED', 'block_trust_model'));
-									//----------------------Mostrar Información resumida-----------------------------------------------------
-									$this->content->text .= $this->string_trust($general_settings, $f1w1, $f2w2, $f3w3, $f4w4, $f5w5,$f6w6,$f7w7,$f8w8, $valueTrust);
-								}
-							}else{
-								$this->content->text .= '<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('moduleConfigurationGeneral', 'block_trust_model').'</p>';
-							}	
-						}	
-				//----------------------------------DOCENTES/ESTUDIANTES.. Contexto Curso--------------------------------------------------
-				}else{	
-						if($general_settings){
-							//-------------PARAMETROS A EJECUTAR SEGUN LA CONFIGURACIÓN DEL ADMINISTRADOR-----------------------
-							$rol = rolParticipante($COURSE -> id, $USER -> id);
+
+			//CONFIGURACION GENERAL DEL MODULO
+			$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');
+			//Obtengo el contexto de curso
+			$context = context_course::instance($COURSE-> id);             
+			//Obtengo los roles del usuario que tiene asignado en el contexto del curso
+			$roles = get_user_roles ( $context , $USER -> id ,  true);
+			if(empty($roles)){
+				$this->content->text .= '<div class="info texto">'.get_string('course', 'block_trust_model').'</div>';
+				//-----------------------------------------ADMINISTRADOR Contexto Sitio/Contexto Curso-------------------------------------
+				if(is_siteadmin($USER->id)){ 
+					//---------------------------Configuración general (Que parametros seran habilitados) y pesos--------------------------
+					$generalSettingsUrl= '/blocks/trust_model/GeneralSettings.php';
+					$this->content->text .= $imagen.html_writer::link(new moodle_url($generalSettingsUrl), get_string('generalSettings', 'block_trust_model')).'<br>';
+					if($general_settings){
+						//-------------------------------------------------Servicio Web-------------------------------------------------------
+						$webService= '/blocks/trust_model/WebService.php';
+						$this->content->text .= $imagen.html_writer::link(new moodle_url($webService), get_string('webService', 'block_trust_model')).'<br>';
+						//----------------------------Configuración General Seguridad (crear nuevos items de seguridad)----------------------
+						if($general_settings->f5w5=='true'){
+							$f5w5Security= '/blocks/trust_model/F5W5_Security.php';
+							$this->content->text .= $imagen.html_writer::link(new moodle_url($f5w5Security), get_string('securityParameters', 'block_trust_model')).'<br>';
+							securityDateEstatic_f5w5();	
+						}
+						//------------------------------Configuración General F7W7 Institucional (templates o servicio web)-------------
+						if($general_settings->f7w7=='true'){
+							$f7w7Institutional= '/blocks/trust_model/F7W7_Institutional.php';
+							$this->content->text .= $imagen.html_writer::link(new moodle_url($f7w7Institutional), get_string('paramsInstitutional', 'block_trust_model'));
+						}
+						if($COURSE -> id != 1){
+							//----------------------PARAMETROS A EJECUTAR SEGUN LA CONFIGURACIÓN DEL ADMINISTRADOR--------------------
 							$f1w1 = f1w1_Previous_Experience($USER -> id, $COURSE -> id);
 							$f2w2 = inferencia_f2w2($USER -> id, $COURSE -> id);
 							if($general_settings->f3w3=='true'){
-								$f3w3= ($rol==1)?0.50:1.00;
+								$f3w3 = 1.00;
 							}else{
 								$f3w3 = Null;
 							}
@@ -162,44 +111,96 @@ class block_trust_model extends block_base {
 								$f8w8 = kin_f8w8($USER -> id);
 							}else{
 								$f8w8 = Null;
-							}	
+							}					
 							$valueTrust= $this->trust($f1w1, $f2w2,$f3w3,$f4w4,$f5w5,$f6w6,$f7w7,$f8w8);
-							//-------------------------Ver detalles------------------------------------------------------------
-							$details = '/blocks/trust_model/index.php';
+							
+							//-----------------------Ver Detalles-----------------------------------------------------------------
+							$details = '/blocks/trust_model/Details.php';
 							$this->content->text = $imagen.html_writer::link(new moodle_url($details, array('u' => $USER -> id, 'c' => $COURSE -> id)), get_string('details', 'block_trust_model')).html_writer::empty_tag('br');
-			
-							if($rol==1){
-								//--------------F1W1 EXPERIENCIA DIRECTA, Rol Estudiante/Habilitar la validación me gusta y no me gusta 
-								$studentValidation =  $DB -> get_record('trust_f1w1_validate_user',  array ('course_id'=>$COURSE -> id));
-								if($studentValidation){
-									if($studentValidation->student_id == $USER->id){
-										$url = new moodle_url('/blocks/trust_model/F1W1_Validation.php', array('c'=>$COURSE -> id));
-										$this->content->text .= $imagen.html_writer::link( $url, get_string('validateED', 'block_trust_model')).html_writer::empty_tag('br');
-									}
-								}
-							}else{ 
-								//------F1W1 EXPERIENCIA DIRECTA Rol Docente/ Configurar experiencia directa y Habilitar la validación me gusta y no me gusta
-								$f1w1_validationConfig = '/blocks/trust_model/F1W1_ValidationConfig.php';
-								$this->content->text .= $imagen.html_writer::link(new moodle_url($f1w1_validationConfig, array('c' => $COURSE -> id)), get_string('configED', 'block_trust_model')).html_writer::empty_tag('br'); 
-							}
-							//---------------------------F7W7 INSTITUCIONAL-----------------------------------------------------------
-							if($general_settings->f7w7=='true'){
-								$institutional =  $DB->get_record_sql('SELECT * FROM {trust_f7w7_config} WHERE codigo IS NOT NULL');	
-								if($institutional){//Si el admin ya configuro F7W7
-									if ($institutional->template=='true'){//TEMPLATES
-										$f7w7_institutional= '/blocks/trust_model/F7W7_Institutional_templateShow.php';
-										$this->content->text .= $imagen.html_writer::link(new moodle_url($f7w7_institutional,array('c' => $COURSE -> id, 'u' => $USER -> id)), get_string('paramsInstitutional', 'block_trust_model')).'<br>';
-									}
-								}else{
-									$this->content->text .= $imagen.get_string('paramsInstitutional', 'block_trust_model').'<br>';
-								}
-							}
-							//----------------------------------Mostrar al usuario Información detallada-----------------------------------------
+							//------------------------Configurar experiencia directa (Seleccionar el docente y estudiante que validara me gusta y no me gusta)----------------
+							$f1w1_validationConfig = '/blocks/trust_model/F1W1_ValidationConfig.php';
+							$this->content->text .= $imagen.html_writer::link(new moodle_url($f1w1_validationConfig, array('c' => $COURSE -> id)), get_string('configED', 'block_trust_model'));
+							//----------------------Mostrar Información resumida-----------------------------------------------------
 							$this->content->text .= $this->string_trust($general_settings, $f1w1, $f2w2, $f3w3, $f4w4, $f5w5,$f6w6,$f7w7,$f8w8, $valueTrust);
+						}
+					}else{
+						$this->content->text .= '<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('moduleConfigurationGeneral', 'block_trust_model').'</p>';
+					}	
+				}	
+			//----------------------------------DOCENTES/ESTUDIANTES.. Contexto Curso--------------------------------------------------
+			}else{	
+				if($general_settings){
+					//-------------PARAMETROS A EJECUTAR SEGUN LA CONFIGURACIÓN DEL ADMINISTRADOR-----------------------
+					$rol = rolParticipante($COURSE -> id, $USER -> id);
+					$f1w1 = f1w1_Previous_Experience($USER -> id, $COURSE -> id);
+					$f2w2 = inferencia_f2w2($USER -> id, $COURSE -> id);
+					if($general_settings->f3w3=='true'){
+						$f3w3= ($rol==1)?0.50:1.00;
+					}else{
+						$f3w3 = Null;
+					}
+					if($general_settings->f4w4=='true'){
+						$f4w4 = knowledge_f4w4($USER -> id, $COURSE -> id);
+					}else{
+						$f4w4 = Null;
+					}
+					if($general_settings->f5w5=='true'){
+						$f5w5 = securityTrust_f5w5();
+					}else{
+						$f5w5 = Null;
+					}
+					if($general_settings->f6w6=='true'){
+						$f6w6= quality_f6w6($COURSE -> id);
+					}else{
+						$f6w6 = Null;
+					}
+					if($general_settings->f7w7=='true'){
+						$f7w7= institutional_f7w7($COURSE -> id, $USER -> id);
+					}else{
+						$f7w7= Null;
+					}
+					if($general_settings->f8w8=='true'){
+						$f8w8 = kin_f8w8($USER -> id);
+					}else{
+						$f8w8 = Null;
+					}	
+					$valueTrust= $this->trust($f1w1, $f2w2,$f3w3,$f4w4,$f5w5,$f6w6,$f7w7,$f8w8);
+					//-------------------------Ver detalles------------------------------------------------------------
+					$details = '/blocks/trust_model/Details.php';
+					$this->content->text = $imagen.html_writer::link(new moodle_url($details, array('u' => $USER -> id, 'c' => $COURSE -> id)), get_string('details', 'block_trust_model')).html_writer::empty_tag('br');
+	
+					if($rol==1){
+						//--------------F1W1 EXPERIENCIA DIRECTA, Rol Estudiante/Habilitar la validación me gusta y no me gusta 
+						$studentValidation =  $DB -> get_record('trust_f1w1_validate_user',  array ('course_id'=>$COURSE -> id));
+						if($studentValidation){
+							if($studentValidation->student_id == $USER->id){
+								$url = new moodle_url('/blocks/trust_model/F1W1_Validation.php', array('c'=>$COURSE -> id));
+								$this->content->text .= $imagen.html_writer::link( $url, get_string('validateED', 'block_trust_model')).html_writer::empty_tag('br');
+							}
+						}
+					}else{ 
+						//------F1W1 EXPERIENCIA DIRECTA Rol Docente/ Configurar experiencia directa y Habilitar la validación me gusta y no me gusta
+						$f1w1_validationConfig = '/blocks/trust_model/F1W1_ValidationConfig.php';
+						$this->content->text .= $imagen.html_writer::link(new moodle_url($f1w1_validationConfig, array('c' => $COURSE -> id)), get_string('configED', 'block_trust_model')).html_writer::empty_tag('br'); 
+					}
+					//---------------------------F7W7 INSTITUCIONAL-----------------------------------------------------------
+					if($general_settings->f7w7=='true'){
+						$institutional =  $DB->get_record_sql('SELECT * FROM {trust_f7w7_config} WHERE codigo IS NOT NULL');	
+						if($institutional){//Si el admin ya configuro F7W7
+							if ($institutional->template=='true'){//TEMPLATES
+								$f7w7_institutional= '/blocks/trust_model/F7W7_Institutional_templateShow.php';
+								$this->content->text .= $imagen.html_writer::link(new moodle_url($f7w7_institutional,array('c' => $COURSE -> id, 'u' => $USER -> id)), get_string('paramsInstitutional', 'block_trust_model')).'<br>';
+							}
 						}else{
-							$this->content->text .= '<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('moduleConfigurationGeneral', 'block_trust_model').'</p>';
-						}								
-				}						
+							$this->content->text .= $imagen.get_string('paramsInstitutional', 'block_trust_model').'<br>';
+						}
+					}
+					//----------------------------------Mostrar al usuario Información detallada-----------------------------------------
+					$this->content->text .= $this->string_trust($general_settings, $f1w1, $f2w2, $f3w3, $f4w4, $f5w5,$f6w6,$f7w7,$f8w8, $valueTrust);
+				}else{
+					$this->content->text .= '<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('moduleConfigurationGeneral', 'block_trust_model').'</p>';
+				}								
+			}						
 		}	
 		$this->content->footer='<p class="info" style="color: #2A5A5F; font-family: cursive; align: center">'.get_string('pluginname', 'block_trust_model').'</p>'; 			
 		return $this->content;
@@ -262,6 +263,7 @@ class block_trust_model extends block_base {
 					$trust->f6w6 = $f6w6;
 					$trust->f7w7 = $f7w7;
 					$trust->f8w8 = $f8w8;
+					$trust->state= $actualizar->state;
 					$trust->trust_level = $valueTrust;
 					$DB->update_record('trust', $trust);
 				
@@ -279,6 +281,7 @@ class block_trust_model extends block_base {
 					$trust->f6w6 = $f6w6;
 					$trust->f7w7 = $f7w7;
 					$trust->f8w8 = $f8w8;
+					$trust->state = 'true';
 					$trust->trust_level = $valueTrust;
 					$trust->id = $DB->insert_record('trust', $trust);	
 				}

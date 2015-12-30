@@ -35,13 +35,14 @@ and open the template in the editor.
         <?php
 		require_once('../../../config.php');
 		global $DB;
+		//--------------------------------------------------OBTENER DATOS DE LA BD NODOS------------------------------------------------>
+		$user_sesion = required_param('us', PARAM_INT);
 		$user_id = required_param('u', PARAM_INT);
 		$course_id = required_param('c', PARAM_INT); 
 		$course = $DB -> get_record('course',array('id'=> $course_id));
 		$userlinea= $DB -> get_record('user',array('id'=> $user_id));
-		//--------------------------------------------------OBTENER DATOS DE LA BD NODOS------------------------------------------------>
 		
-		//OBTENEMOS LOS PARTICIPANTES DEL CURSO
+		//------------------------------------------------OBTENEMOS LOS PARTICIPANTES DEL CURSO
 		$contexto =context_course::instance($course_id);												
 		$roleTeacher =  $DB -> get_record('role',  array ('shortname'=>'editingteacher'));	
 		$roleStudent =  $DB -> get_record('role',  array ('shortname'=>'student'));
@@ -59,7 +60,7 @@ and open the template in the editor.
 												$roleManager->id, 
 												$roleCourseCreator->id));
 		
-		//NODOS PARTICIPANTES
+		//-------------------------------------------------------INFORMACIÓN PARA CADA NODO 
 		$arrayPHPnodos=array();
 		foreach($lstParticipantes as $participante){
 			//Obtener el numero de like y  not_like
@@ -137,143 +138,104 @@ and open the template in the editor.
 			$arrayPHPnodos[] = $nodo;
 		}
 		
-		//ASIGNAR USUARIO ACTUAL
+		//-----------------------------------------------------------ASIGNAR USUARIO ACTUAL
         $userActual='"'.$user_id.'"';          
         
-		//INTERACCIONES
-		$sqlUsuarios = "SELECT  user_emisor, user_receptor FROM 
-					(SELECT user_id as user_emisor,posts_user as user_receptor 
-					FROM {trust_f1w1_history_forum}
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-					
-					UNION ALL
-					SELECT user_id as user_emisor, attempts_user as user_receptor 
-					FROM {trust_f1w1_history_quiz} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, CASE WHEN comments_user=0 THEN assing_user ELSE comments_user END as user_receptor 
-					FROM {trust_f1w1_history_assign}
-					WHERE course_id = $course_id  
-					GROUP BY user_emisor, user_receptor 
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, book_user as user_receptor
-					FROM {trust_f1w1_history_book}
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, file_user as user_receptor
-					FROM {trust_f1w1_history_file} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-
-					UNION ALL
-					SELECT user_id as user_emisor, folder_file_user as user_receptor 
-					FROM {trust_f1w1_history_folder} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, page_user as user_receptor
-					FROM {trust_f1w1_history_page} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor
-
-					UNION ALL
-					SELECT user_id as user_emisor, url_user as user_receptor
-					FROM {trust_f1w1_history_url} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor)
-					
-		 
-				AS tablaTemporal 
-				GROUP BY user_emisor, user_receptor";
-		
-		
-		$sqlAcciones= "SELECT  user_emisor, user_receptor, action, SUM(cont) as sum FROM 
-					(SELECT user_id as user_emisor,posts_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_forum}
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action
-					
-					UNION ALL
-					SELECT user_id as user_emisor, attempts_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_quiz} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action 
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, CASE WHEN comments_user=0 THEN assing_user ELSE comments_user END as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_assign}
-					WHERE course_id = $course_id  
-					GROUP BY user_emisor, user_receptor, action 
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, book_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_book}
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, file_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_file} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action
-
-					UNION ALL
-					SELECT user_id as user_emisor, folder_file_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_folder} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action
-					 
-					UNION ALL
-					SELECT user_id as user_emisor, page_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_page} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action 
-
-					UNION ALL
-					SELECT user_id as user_emisor, url_user as user_receptor, action, COUNT(*) as cont 
-					FROM {trust_f1w1_history_url} 
-					WHERE course_id = $course_id 
-					GROUP BY user_emisor, user_receptor, action) 
-		 
-				AS tablaTemporal 
-				GROUP BY user_emisor, user_receptor, action";
-		
+		//----------------------------------------------------------ENLACES EN LOS NODOS
 		$arrayPHPenlaces=array();
-		//Recorro los usuarios
-		$usuarios = $DB->get_recordset_sql($sqlUsuarios);
-		foreach ($usuarios  as $objeto) {
-			$nroLike = 0;
-			$nroNotLike = 0;
-			$acciones = $DB->get_recordset_sql($sqlAcciones);
-			//Unifico el número de Me gusta y Número de No me gusta
-			foreach ($acciones as $accion) {
-				if($accion->user_emisor == $objeto->user_emisor && $accion->user_receptor == $objeto->user_receptor){
+		foreach ($lstParticipantes as $participante) {
+			if($participante->userid!=$user_id){
+				$nroLike = 0;
+				$nroNotLike = 0;
+				$sqlAcciones= 	"SELECT  user_emisor, user_receptor, action, SUM(cont) as sum FROM 
+									(
+									SELECT user_id as user_emisor, posts_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_forum}
+									WHERE 	course_id = $course_id AND  
+											user_id = $participante->userid AND 
+											posts_user = $user_id 
+									GROUP BY user_emisor, user_receptor, action
+									
+									UNION ALL
+									SELECT user_id as user_emisor, attempts_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_quiz} 
+									WHERE 	course_id = $course_id AND  
+											user_id = $participante->userid AND 
+											attempts_user = $user_id
+									GROUP BY user_emisor, user_receptor, action 
+									 
+									UNION ALL
+									SELECT user_id as user_emisor, CASE WHEN comments_user=0 THEN assing_user ELSE comments_user END as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_assign}
+									WHERE 	course_id = $course_id AND 
+											user_id = $participante->userid AND
+											CASE WHEN comments_user=0 THEN assing_user = $user_id  ELSE comments_user = $user_id END
+									GROUP BY user_emisor, user_receptor, action 
+									 
+									UNION ALL
+									SELECT user_id as user_emisor, book_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_book}
+									WHERE 	course_id = $course_id AND 
+											user_id = $participante->userid AND
+											book_user = $user_id
+									GROUP BY user_emisor, user_receptor, action
+									 
+									UNION ALL
+									SELECT user_id as user_emisor, file_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_file} 
+									WHERE 	course_id = $course_id AND 
+											user_id = $participante->userid AND
+											file_user = $user_id
+									GROUP BY user_emisor, user_receptor, action
+
+									UNION ALL
+									SELECT user_id as user_emisor, folder_file_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_folder} 
+									WHERE 	course_id = $course_id AND 
+											user_id = $participante->userid AND
+											folder_file_user = $user_id
+									GROUP BY user_emisor, user_receptor, action
+									 
+									UNION ALL
+									SELECT user_id as user_emisor, page_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_page} 
+									WHERE 	course_id = $course_id AND 
+											user_id = $participante->userid AND
+											page_user = $user_id
+									GROUP BY user_emisor, user_receptor, action 
+
+									UNION ALL
+									SELECT user_id as user_emisor, url_user as user_receptor, action, COUNT(*) as cont 
+									FROM {trust_f1w1_history_url} 
+									WHERE 	course_id = $course_id AND
+											user_id = $participante->userid AND
+											url_user = $user_id
+									GROUP BY user_emisor, user_receptor, action) 
+			 
+								AS tablaTemporal 
+								GROUP BY user_emisor, user_receptor, action";
+				$acciones = $DB->get_recordset_sql($sqlAcciones);
+				foreach ($acciones as $accion) {
 					if($accion->action==1){
 						$nroLike = $accion->sum;
 					}else if ($accion->action==-1){
 						$nroNotLike = $accion->sum;
 					}
 				}
+				$acciones ->close();
+				if($nroLike>0 || $nroNotLike>0){
+					$cadena1= '"'.$participante->userid.'"';
+					$cadena2= '"'.$user_id.'"';
+					$enlace = array("user_emisor" => $cadena1, 
+									"user_receptor" => $cadena2, 
+									"like" => $nroLike,
+									"notlike" => $nroNotLike);
+					$arrayPHPenlaces[] = $enlace;
+				}
 			}
-			$acciones ->close();
-			$cadena1= '"'.$objeto->user_emisor.'"';
-			$cadena2= '"'.$objeto->user_receptor.'"';
-			$enlace = array("user_emisor" => $cadena1, 
-							"user_receptor" => $cadena2, 
-							"like" => $nroLike,
-							"notlike" => $nroNotLike);
-			$arrayPHPenlaces[] = $enlace;
 		}
-		$usuarios->close();
 		
-		//--------------------------------------------------OBTENER DATOS DE LA BD LINEA DE TIEMPO-----------------------------------------------		
+		//--------------------------------------------------OBTENER DATOS DE LA BD LINEA DE TIEMPO	
 		$arrayLineaTiempo=array();
 		$sqlLineaTiempo= $DB->get_records_sql('SELECT  t2.category, t3.name, AVG(trust_level) as promedio 
 												FROM {trust} t1
@@ -323,7 +285,18 @@ and open the template in the editor.
 								<?php 
 								foreach($lstParticipantes as $participante){
 									$user = $DB -> get_record('user',array('id'=> $participante->userid));
-									?><li><spam><?php echo fullname($user);?></spam></li><?php
+									if(is_siteadmin($user_sesion)){										
+										if($participante->userid==$user_id){
+											?><li><spam><?php echo fullname($user);?></spam></li><?php
+										}else{
+											$url_grafic = new moodle_url('/blocks/trust_model/graphic/index.php', array('us'=>$user_sesion,
+																													'u'=>$participante->userid, 
+																													'c'=>$course_id));
+											?><li><a href="<?php echo $url_grafic;?>"><?php echo fullname($user);?></a></li><?php
+										}
+									}else{
+										?><li><spam><?php echo fullname($user);?></spam></li><?php
+									}
 								}
 								?>
 							</ol>
@@ -384,7 +357,7 @@ and open the template in the editor.
 										<li class="active"><a href="#" style="text-align:center; ">Cursos</a></li>
 									</ul>
 									<?php 
-									if(is_siteadmin($user_id)){
+									if(is_siteadmin($user_sesion)){
 										$courses = $DB ->get_records_sql("SELECT * FROM {course} WHERE  format NOT LIKE ? ", array('site'));
 										?>
 										<ul style="padding-left:10px">
@@ -393,7 +366,9 @@ and open the template in the editor.
 												if($obj->id==$course_id){
 													?><li><spam><?php echo $obj->shortname;?></spam></li><?php
 												}else{
-													$url_grafic = new moodle_url('/blocks/trust_model/graphic/index.php', array('u'=>$user_id, 'c'=>$obj->id));
+													$url_grafic = new moodle_url('/blocks/trust_model/graphic/index.php', array('us'=>$user_sesion,
+																																'u'=>$user_sesion, 
+																																'c'=>$obj->id));
 													?><li><a href="<?php echo $url_grafic;?>"><?php echo $obj->shortname;?></a></li><?php
 												}
 											}
@@ -453,12 +428,8 @@ and open the template in the editor.
 						    to: arrayJSenlaces[i].user_receptor, 
 							label: '(+)'+arrayJSenlaces[i].like +'\n(-)' + arrayJSenlaces[i].notlike, 
 							color: 'blue', 
-							length: EDGE_LENGTH});
-                /*if(arrayJSenlaces[i].action === "-1"){
-                    edges.push({from: arrayJSenlaces[i].user_emisor, to: arrayJSenlaces[i].user_receptor, label: '- '+arrayJSenlaces[i].label, color: 'green', length: EDGE_LENGTH});
-                }else{
-                    edges.push({from: arrayJSenlaces[i].user_emisor, to: arrayJSenlaces[i].user_receptor, label: '+ ' +arrayJSenlaces[i].label, color: 'blue', length: EDGE_LENGTH});
-                } */               
+							//length: EDGE_LENGTH
+							});              
             }
 			// Create a Red
             var container = document.getElementById('mynetwork');
@@ -469,7 +440,7 @@ and open the template in the editor.
             //Configuracion de nodos, aristas, etc..
             var options = {
 				smoothCurves: {dynamic:true, type: "continuous"},
-				physics: {springLength:200}, 
+				//physics: {springLength:200}, 
                 //Configuracion de nodos
                 nodes: {
                     //image: 'img/student.png',

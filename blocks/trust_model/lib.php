@@ -1,7 +1,7 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 //Configuración general
-function save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, $f8w8){
+function save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, $f8w8, $umbral){
 	global $DB;
 	$general_settings =  $DB->get_record_sql('SELECT * FROM {trust_general_settings} WHERE codigo IS NOT NULL');	
 	if($general_settings){//Actualizo
@@ -16,7 +16,8 @@ function save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, 
 		$config->f6w6 = $f6w6;
 		$config->f7w7 = $f7w7;
 		$config->f8w8 = $f8w8;
-		$config->codigo =$actualizar ->codigo;
+		$config->umbral = $umbral;
+		$config->codigo = $actualizar ->codigo;
 		$DB->update_record('trust_general_settings', $config);
 	}else{//Creo
 		$config = new stdClass ();   
@@ -28,6 +29,7 @@ function save_general_settings($f1w1, $f2w2, $f3w3, $f4w4, $f5w5, $f6w6, $f7w7, 
 		$config->f6w6 = $f6w6;
 		$config->f7w7 = $f7w7;
 		$config->f8w8 = $f8w8;
+		$config->umbral = $umbral;
 		$config->codigo ='trust_model';
 		return $DB->insert_record('trust_general_settings', $config);
 	}
@@ -1348,7 +1350,7 @@ function institutional_f7w7($courseid, $userid){
 			$f7w7=0.50;
 		}
 	}else{ //No esta guardada la configuracion previa
-		$f7w7=Null;
+		$f7w7=0;
 	}
 	return $f7w7;
 }
