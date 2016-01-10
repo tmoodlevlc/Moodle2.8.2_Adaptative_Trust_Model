@@ -3498,30 +3498,65 @@ function forum_print_post($post, $discussion, $forum, &$cm, $course, $ownpost=fa
 		$discusion_id=$post->discussion;
 		$post_id=$post->id; 
 		$post_user=$post->userid;
-		//Variables Modelo de Confianza
-		$like= get_string('like', 'block_trust_model');
-		$not_like= get_string('not_like', 'block_trust_model');
+		
+		//Variables Modelo de Confianza					
+		$nroLike = $DB->count_records('trust_f1w1_history_forum', array('action' => 1,
+																	'course_id' => $course_id,
+																	'forum_id' => $forum_id,
+																	'discussions_id' => $discusion_id,
+																	'posts_id' => $post_id));
+		$nroNotLike = $DB->count_records('trust_f1w1_history_forum', array('action' => -1,
+																	'course_id' => $course_id,
+																	'forum_id' => $forum_id,
+																	'discussions_id' => $discusion_id,
+																	'posts_id' => $post_id));
+		$like= get_string('like', 'block_trust_model').'('.$nroLike.')';
+		$not_like= get_string('not_like', 'block_trust_model').'('.$nroNotLike.')';
+		
 		//Verifica si ya evaluo el usuario al post
-		$count = $DB->count_records('trust_f1w1_history_forum', array('user_id' => $userId,'course_id' => $course_id,'forum_id' => $forum_id,
-									'discussions_id' => $discusion_id,'posts_id' => $post_id, 'posts_user' => $post_user));
-		//Muestra las opciones (Me gusta, No me gusta) en cada post del foro y se envia los parametros al archivo
-			if($userId != $post->userid){//Controla si ingresa a un post escrito por  el mismo usuario
-				if($count==0){//Ingresa si no existe un registro, no evaluo el post
+		$count = $DB->count_records('trust_f1w1_history_forum', array('user_id' => $userId,
+																	'course_id' => $course_id,
+																	'forum_id' => $forum_id,
+																	'discussions_id' => $discusion_id,
+																	'posts_id' => $post_id, 
+																	'posts_user' => $post_user));
+	
+		if($userId != $post->userid){//Controla si ingresa a un post escrito por  el mismo usuario
+			if($count==0){//Ingresa si no existe un registro, no evaluo el post
 				$url = $PAGE->url;
 				$commands[] = array('url'=>new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', 
-				array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => +1,'url' => $url)), 'text'=>$like);
-				
+														array ('opc' => 1,
+																'u' => $userId, 
+																'c' => $course_id, 
+																'f' => $forum_id,
+																'd' => $discusion_id,
+																'p' => $post_id,
+																'pu' => $post_user, 
+																'mc' => +1,
+																'url' => $url)
+														), 
+									'text'=>$like);
+			
 				$commands[] = array('url'=>new moodle_url('/blocks/trust_model/F1W1_Previous_Experience.php', 
-				array ('opc' => 1,'u' => $userId, 'c' => $course_id, 'f' => $forum_id,'d' => $discusion_id,'p' => $post_id,'pu' => $post_user, 'mc' => -1,'url' => $url)), 'text'=>$not_like);
-							
-				}else{//Si ya evaluo el post
-					$commands[]= $like;
-					$commands[]= $not_like;
-				}
-			}else{
+															array ('opc' => 1,
+																'u' => $userId, 
+																'c' => $course_id, 
+																'f' => $forum_id,
+																'd' => $discusion_id,
+																'p' => $post_id,
+																'pu' => $post_user, 
+																'mc' => -1,
+																'url' => $url)
+														), 
+									'text'=>$not_like);
+			}else{//Si ya evaluo el post
 				$commands[]= $like;
 				$commands[]= $not_like;
 			}
+		}else{
+			$commands[]= $like;
+			$commands[]= $not_like;
+		}
 	}	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
