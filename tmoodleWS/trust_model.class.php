@@ -3,7 +3,7 @@ include_once('globals.php');
 class TrustModel { 
 	public function getTrustModel() {
 		$lista = array();  
-		$sql = 'SELECT 	u.id, 
+		$sql = 'SELECT u.id, 
 						u.idnumber, 
 						firstname, 
 						lastname, 
@@ -12,12 +12,12 @@ class TrustModel {
 				FROM mdl_trust t 
 				INNER JOIN mdl_user u ON u.id = t.user_id
 				WHERE t.state = "true"
-				GROUP BY 	id, 
-							idnumber, 
-							firstname, 
-							lastname, 
-							username, 
-							email';
+				GROUP BY id, 
+						idnumber, 
+						firstname, 
+						lastname, 
+						username, 
+						email';
 		$db = new conecction();
 		$result = $db->executeQuery($sql);
 		
